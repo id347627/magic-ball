@@ -142,7 +142,7 @@
   </div>
 
   <div id="instruction"></div>
-  <button id="desktop-btn" onclick="shakeBall()">ПОТРЯСТИ 🔮</button>
+  <button id="desktop-btn" onclick="shakeBall()">ПОТРЯСТИ 🎱</button>
 
   <script>
     const tg = window.Telegram.WebApp;
@@ -156,6 +156,7 @@
     ];
 
     let isShaking = false;
+    let sensorsActive = false; // Прапор активації сенсорів
     let resetTimer;
     const ball = document.getElementById('ball');
     const container = document.getElementById('triangle-container');
@@ -163,14 +164,69 @@
     const instruction = document.getElementById('instruction');
     const btn = document.getElementById('desktop-btn');
 
+    // Налаштування початкового стану інтерфейсу
     if (isMobileDevice()) {
-  btn.style.display = 'none'; // Використовуємо display:none для надійності
-  btn.setAttribute('disabled', 'true'); // Про всяк випадок вимикаємо
-  instruction.innerText = "Зосередься на питанні та потряси телефон 📱";
-} else {
-  btn.style.display = 'block';
-  instruction.style.display = 'none';
-}
+      instruction.innerText = "Зосередься на питанні та потряси телефон 📱";
+      btn.innerText = "ГРАТИ 🎱"; // Для мобільних це кнопка-активатор
+    } else {
+      instruction.innerText = "Натисніть кнопку, щоб отримати відповідь";
+    }
+    btn.style.display = 'block';
+
+    function isMobileDevice() {
+      const platform = tg.platform.toLowerCase();
+      const hasTouch = (('ontouchstart' in window) || (navigator.maxTouchPoints > 0));
+      return ['android', 'ios', 'weba'].includes(platform) || (hasTouch && platform !== 'desktop');
+    }
+
+    // ГОЛОВНА ФУНКЦІЯ: Обробка кліку (включає запит для iOS)
+    async function handleButtonClick() {
+      // Якщо це iOS і сенсори ще не активовані
+      if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+        try {
+          const permission = await DeviceMotionEvent.requestPermission();
+          if (permission === 'granted') {
+            activateSensors();
+            instruction.innerText = "Доступ отримано! Тепер можеш просто трясти 📱";
+          }
+        } catch (e) {
+          console.error("iOS Sensor Error:", e);
+        }
+      } else if (!sensorsActive) {
+        // Для Android та інших
+        activateSensors();
+      }
+      
+      // У будь-якому випадку запускаємо трясіння при натисканні
+      shakeBall();
+    }
+
+    function activateSensors() {
+      if (sensorsActive) return;
+      
+      // Слухаємо нахил (Orientation)
+      window.addEventListener('deviceorientation', (event) => {
+        if (isShaking || container.style.opacity === "0") return;
+        const x = (event.gamma || 0) / 2.5; 
+        const y = ((event.beta || 45) - 45) / 2.5; 
+        container.style.transform = `translate(${x}px, ${y}px)`;
+      });
+
+      // Слухаємо трясіння (Motion)
+      let lastX, lastY, lastZ;
+      window.addEventListener('devicemotion', (event) => {
+        let acc = event.accelerationIncludingGravity;
+        if (!acc || !acc.x) return;
+        if (lastX) {
+          let diff = Math.abs(lastX - acc.x) + Math.abs(lastY - acc.y) + Math.abs(lastZ - acc.z);
+          if (diff > 25) shakeBall(); 
+        }
+        lastX = acc.x; lastY = acc.y; lastZ = acc.z;
+      });
+
+      sensorsActive = true;
+      btn.innerText = "ПОТРЯСТИ 🎱"; // Змінюємо текст після активації
+    }
 
     function resetBall() {
       container.style.opacity = "0";
@@ -203,32 +259,8 @@
       }, 1000);
     }
 
-    function isMobileDevice() {
-  const platform = tg.platform.toLowerCase();
-  // Перевіряємо платформу Telegram АБО наявність сенсорного екрана
-  const hasTouch = (('ontouchstart' in window) || (navigator.maxTouchPoints > 0));
-  const isTgMobile = ['android', 'ios', 'weba'].includes(platform);
-  
-  return isTgMobile || (hasTouch && platform !== 'desktop');
-}
-
-    window.addEventListener('deviceorientation', (event) => {
-      if (isShaking || container.style.opacity === "0") return;
-      const x = (event.gamma || 0) / 2.5; 
-      const y = ((event.beta || 45) - 45) / 2.5; 
-      container.style.transform = `translate(${x}px, ${y}px)`;
-    });
-
-    let lastX, lastY, lastZ;
-    window.addEventListener('devicemotion', (event) => {
-      let acc = event.accelerationIncludingGravity;
-      if (!acc || !acc.x) return;
-      if (lastX) {
-        let diff = Math.abs(lastX - acc.x) + Math.abs(lastY - acc.y) + Math.abs(lastZ - acc.z);
-        if (diff > 25) shakeBall(); 
-      }
-      lastX = acc.x; lastY = acc.y; lastZ = acc.z;
-    });
+    // Замінюємо прямий виклик shakeBall на обробник з правами доступу
+    btn.onclick = handleButtonClick;
   </script>
 </body>
 </html>
