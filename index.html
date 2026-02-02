@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body { 
+      background: #1a1a1a; 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      justify-content: center; 
+      height: 100vh; 
+      margin: 0; 
+      color: white; 
+      font-family: sans-serif; 
+      overflow: hidden;
+      touch-action: none;
+    }
+
+    #ball { 
+      width: 300px; 
+      height: 300px; 
+      background: radial-gradient(circle at 30% 30%, #444, #000); 
+      border-radius: 50%; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      position: relative; 
+      box-shadow: 0 20px 50px rgba(0,0,0,0.9);
+    }
+
+    #window { 
+      width: 170px; 
+      height: 170px; 
+      background: #020202; 
+      border-radius: 50%; 
+      border: 12px solid #222; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      position: relative;
+      overflow: hidden; 
+      box-shadow: inset 0 0 35px rgba(0,0,0,1);
+    }
+
+    #triangle-container {
+      position: absolute;
+      width: 200px; 
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.15s ease-out, opacity 0.6s ease-in-out;
+      will-change: transform;
+    }
+
+    #triangle {
+      width: 0;
+      height: 0;
+      /* Трохи менші розміри: 105px (разом 210px) при вікні 170px */
+      border-left: 105px solid transparent;
+      border-right: 105px solid transparent;
+      border-bottom: 180px solid #1a3a8a;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      /* Зміщення вгору, щоб верхній кінчик зайшов за край */
+      margin-top: -35px; 
+      filter: drop-shadow(0 0 15px rgba(0,0,0,0.6));
+    }
+
+    #answer { 
+      position: absolute;
+      /* Для тексту відповідей */
+      top: 80px; 
+      color: #7fb0ff; 
+      font-weight: bold; 
+      font-size: 13px; 
+      text-align: center;
+      width: 100px;
+      line-height: 1.2;
+      text-transform: uppercase; 
+      text-shadow: 0 0 10px #4080ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 60px;
+    }
+
+    /* Спеціальний стиль для центрування знака питання */
+    #answer.initial {
+      font-size: 70px;
+      top: 65px; 
+      height: 80px;
+      width: 100%;
+    }
+
+    .shake-anim { animation: shakeEffect 0.4s infinite; }
+    @keyframes shakeEffect {
+      0% { transform: translate(0,0); }
+      25% { transform: translate(12px, 12px); }
+      50% { transform: translate(-12px, 12px); }
+      75% { transform: translate(12px, -12px); }
+      100% { transform: translate(0,0); }
+    }
+
+    #instruction {
+      margin-top: 40px;
+      font-size: 16px;
+      text-align: center;
+      padding: 0 20px;
+      color: #666;
+      max-width: 250px;
+    }
+
+    #desktop-btn {
+      display: none;
+      margin-top: 30px;
+      padding: 15px 45px;
+      border-radius: 35px;
+      border: none;
+      background: linear-gradient(135deg, #4080ff, #1a3a8a);
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    }
+  </style>
+</head>
+<body>
+
+  <div id="ball">
+    <div id="window">
+      <div id="triangle-container">
+        <div id="triangle">
+          <div id="answer" class="initial">?</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="instruction"></div>
+  <button id="desktop-btn" onclick="shakeBall()">ПОТРЯСТИ 🔮</button>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand();
+
+    const answers = [
+      "Безперечно", "Так", "Можеш бути впевнений", "Мені здається — так", "Перспективи хороші",
+      "Запитай пізніше", "Зараз не можу сказати", "Краще не розповідати",
+      "Навіть не думай", "Моя відповідь — ні", "Погані перспективи", "Вельми сумнівно"
+    ];
+
+    let isShaking = false;
+    let resetTimer;
+    const ball = document.getElementById('ball');
+    const container = document.getElementById('triangle-container');
+    const ansText = document.getElementById('answer');
+    const instruction = document.getElementById('instruction');
+    const btn = document.getElementById('desktop-btn');
+
+    if (isMobileDevice()) {
+  btn.style.display = 'none'; // Використовуємо display:none для надійності
+  btn.setAttribute('disabled', 'true'); // Про всяк випадок вимикаємо
+  instruction.innerText = "Зосередься на питанні та потряси телефон 📱";
+} else {
+  btn.style.display = 'block';
+  instruction.style.display = 'none';
+}
+
+    function resetBall() {
+      container.style.opacity = "0";
+      setTimeout(() => {
+        ansText.innerText = "?";
+        ansText.className = "initial";
+        container.style.opacity = "1";
+      }, 600);
+    }
+
+    function shakeBall() {
+      if (isShaking) return;
+      isShaking = true;
+      clearTimeout(resetTimer);
+      
+      container.style.opacity = "0";
+      ball.classList.add('shake-anim');
+
+      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+
+      setTimeout(() => {
+        ball.classList.remove('shake-anim');
+        const randomAnswer = answers[Math.floor(Math.random() * answers.length)];
+        ansText.innerText = randomAnswer;
+        ansText.className = ""; 
+        container.style.opacity = "1";
+        isShaking = false;
+        
+        resetTimer = setTimeout(resetBall, 30000);
+      }, 1000);
+    }
+
+    function isMobileDevice() {
+  const platform = tg.platform.toLowerCase();
+  // Перевіряємо платформу Telegram АБО наявність сенсорного екрана
+  const hasTouch = (('ontouchstart' in window) || (navigator.maxTouchPoints > 0));
+  const isTgMobile = ['android', 'ios', 'weba'].includes(platform);
+  
+  return isTgMobile || (hasTouch && platform !== 'desktop');
+}
+
+    window.addEventListener('deviceorientation', (event) => {
+      if (isShaking || container.style.opacity === "0") return;
+      const x = (event.gamma || 0) / 2.5; 
+      const y = ((event.beta || 45) - 45) / 2.5; 
+      container.style.transform = `translate(${x}px, ${y}px)`;
+    });
+
+    let lastX, lastY, lastZ;
+    window.addEventListener('devicemotion', (event) => {
+      let acc = event.accelerationIncludingGravity;
+      if (!acc || !acc.x) return;
+      if (lastX) {
+        let diff = Math.abs(lastX - acc.x) + Math.abs(lastY - acc.y) + Math.abs(lastZ - acc.z);
+        if (diff > 25) shakeBall(); 
+      }
+      lastX = acc.x; lastY = acc.y; lastZ = acc.z;
+    });
+  </script>
+</body>
+</html>
