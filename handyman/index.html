@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body { margin: 0; background: #1a1a2e; overflow: hidden; touch-action: none; font-family: sans-serif; }
+    canvas { display: block; }
+    #ui-container {
+      position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+      width: 80%; max-width: 400px; z-index: 100; text-align: center;
+    }
+    #progress-wrapper {
+      width: 100%; height: 14px; background: rgba(0,0,0,0.5);
+      border: 1px solid #ecf0f1; border-radius: 7px; overflow: hidden; display: none;
+    }
+    #progress-bar { width: 0%; height: 100%; background: #f1c40f; transition: width 0.1s linear; }
+    #info-text { color: white; margin-bottom: 8px; text-shadow: 1px 1px 3px black; font-size: 14px; }
+  </style>
+</head>
+<body>
+
+<div id="ui-container">
+  <div id="info-text">Натисніть на вхід для ремонту упора</div>
+  <div id="progress-wrapper"><div id="progress-bar"></div></div>
+</div>
+
+<canvas id="gameCanvas"></canvas>
+
+<script>
+  const tg = window.Telegram.WebApp;
+  tg.expand();
+
+  const canvas = document.getElementById('gameCanvas');
+  const ctx = canvas.getContext('2d');
+  const progressWrapper = document.getElementById('progress-wrapper');
+  const progressBar = document.getElementById('progress-bar');
+  const infoText = document.getElementById('info-text');
+
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const tileW = 80; const tileH = 40;
+    const player = { 
+    x: 5, y: 5, tx: 5, ty: 5, 
+    state: 'idle', frame: 0, 
+    isBack: false,
+    canWork: true // Дозволяє почати роботу
+};
+  const targetLoc = { x: 3, y: 3 }; // Точка біля дверей тамбура
+  
+  let particles = [];
+
+  function toScreen(gx, gy, gz = 0) {
+    return {
+      x: canvas.width / 2 + (gx - gy) * (tileW / 2),
+      y: canvas.height / 1.8 + (gx + gy) * (tileH / 2) - gz
+    };
+  }
+
+function drawHouse() {
+    // 1. ОСНОВНИЙ ФАСАД БУДИНКУ
+    const wallStart = toScreen(0, -10);
+    const wallEnd = toScreen(0, 10); 
+    const houseHeight = 750; 
+
+    ctx.fillStyle = "#7f8c8d";
+    ctx.beginPath();
+    ctx.moveTo(wallStart.x, wallStart.y);
+    ctx.lineTo(wallEnd.x, wallEnd.y);
+    ctx.lineTo(wallEnd.x, wallEnd.y - houseHeight);
+    ctx.lineTo(wallStart.x, wallStart.y - houseHeight);
+    ctx.fill();
+
+    // 2. ВІКНА БУДИНКУ
+    ctx.fillStyle = "#2c3e50";
+    for (let floor = 0; floor < 8; floor++) {
+        let hOff = floor * 85 + 130; 
+        drawIsoWindow(toScreen(0, 3).x, toScreen(0, 3).y - hOff, 30, 45);
+        drawIsoWindow(toScreen(0, 6).x, toScreen(0, 6).y - hOff, 40, 50);
+        drawIsoWindow(toScreen(0, 8.5).x, toScreen(0, 8.5).y - hOff, 40, 50);
+    }
+
+    // 3. ПАРАМЕТРИ ТАМБУРА
+    const th = 120; // Висота
+    const p0 = toScreen(0, 1); // Задній лівий (примикає до стіни)
+    const p1 = toScreen(1, 1); // Передній лівий
+    const p2 = toScreen(1, 4); // Передній правий
+    const p3 = toScreen(0, 4); // Задній правий (примикає до стіни)
+
+    // Підлога всередині
+    ctx.fillStyle = "#34495e";
+    ctx.beginPath();
+    ctx.moveTo(p0.x, p0.y); ctx.lineTo(p1.x, p1.y);
+    ctx.lineTo(p2.x, p2.y); ctx.lineTo(p3.x, p3.y);
+    ctx.fill();
+	
+	// ПРАВА БІЧНА СТІНА (Та, що ближче до нас/правіше)
+    ctx.fillStyle = "#95a5a6"; // Трохи темніша для об'єму
+    ctx.beginPath();
+    ctx.moveTo(p2.x, p2.y); ctx.lineTo(p3.x, p3.y);
+    ctx.lineTo(p3.x, p3.y - th); ctx.lineTo(p2.x, p2.y - th);
+    ctx.closePath();
+    ctx.fill();
+
+    // ЛІВА БІЧНА СТІНА (Глуха)
+    ctx.fillStyle = "#95a5a6";
+    ctx.beginPath();
+    ctx.moveTo(p0.x, p0.y); ctx.lineTo(p1.x, p1.y);
+    ctx.lineTo(p1.x, p1.y - th); ctx.lineTo(p0.x, p0.y - th);
+    ctx.fill();
+
+    // 3. ПЕРЕДНЯ СТІНА (ФАСАД)
+    ctx.fillStyle = "#bdc3c7";
+    ctx.beginPath();
+    ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y);
+    ctx.lineTo(p2.x, p2.y - th); ctx.lineTo(p1.x, p1.y - th);
+    ctx.closePath();
+    ctx.fill();
+
+    const anthracite = "#2c3e50";
+
+    // 1. ПАНОРАМНЕ СКЛО (Ліва секція: 1.1 - 2.0)
+    ctx.fillStyle = "rgba(135, 206, 235, 0.4)";
+    const glassLeft = [
+        {gx: 1, gy: 1.1, gz: 5}, {gx: 1, gy: 2.0, gz: 5},
+        {gx: 1, gy: 2.0, gz: 110}, {gx: 1, gy: 1.1, gz: 110}
+    ];
+    drawIsoShape(glassLeft);
+    ctx.strokeStyle = anthracite;
+    ctx.lineWidth = 3;
+    drawIsoShapeOutline(glassLeft);
+
+    // 2. ЦЕНТРАЛЬНА СЕКЦІЯ (Дверний проріз: 2.05 - 2.95)
+    // Глибина прорізу
+    ctx.fillStyle = "#1a1a2e";
+    drawIsoShape([
+        {gx: 1, gy: 2.05, gz: 0}, {gx: 0.9, gy: 2.05, gz: 0},
+        {gx: 0.9, gy: 2.05, gz: 110}, {gx: 1, gy: 2.05, gz: 110}
+    ]);
+
+    // Рама прорізу
+    ctx.strokeStyle = anthracite;
+    ctx.lineWidth = 3;
+    const doorFrame = [
+        {gx: 1, gy: 2.05, gz: 0}, {gx: 1, gy: 2.95, gz: 0},
+        {gx: 1, gy: 2.95, gz: 110}, {gx: 1, gy: 2.05, gz: 110}
+    ];
+    drawIsoShapeOutline(doorFrame);
+
+    // 3. ПАНОРАМНЕ СКЛО (Права секція: 3.0 - 3.9)
+    ctx.fillStyle = "rgba(135, 206, 235, 0.4)";
+    const glassRight = [
+        {gx: 1, gy: 3.0, gz: 5}, {gx: 1, gy: 3.9, gz: 5},
+        {gx: 1, gy: 3.9, gz: 110}, {gx: 1, gy: 3.0, gz: 110}
+    ];
+    drawIsoShape(glassRight);
+    ctx.strokeStyle = anthracite;
+    ctx.lineWidth = 3;
+    drawIsoShapeOutline(glassRight);
+
+    // 4. ВІДКРИТІ ДВЕРІ (Більш відчинені, завіси зліва на позначці 2.05)
+    const hingePos = toScreen(1, 2.05, 0); 
+    ctx.fillStyle = "rgba(135, 206, 235, 0.6)";
+    ctx.beginPath();
+    ctx.moveTo(hingePos.x, hingePos.y);
+    
+    // Крайня точка дверей (ширина дверей збігається з прорізом ~0.9 клітинки)
+    const doorOpen = toScreen(1.7, 2.05, 0); 
+    ctx.lineTo(doorOpen.x, doorOpen.y);
+    ctx.lineTo(doorOpen.x, doorOpen.y - 110);
+    ctx.lineTo(hingePos.x, hingePos.y - 110);
+    ctx.closePath();
+    ctx.fill();
+
+    // Рама дверей
+    ctx.strokeStyle = anthracite;
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    // Ручка
+    ctx.beginPath();
+    ctx.moveTo(doorOpen.x - 3, doorOpen.y - 55);
+    ctx.lineTo(doorOpen.x - 3, doorOpen.y - 45);
+    ctx.strokeStyle = anthracite;
+    ctx.stroke();
+
+    // Оновлена точка цілі (прямо в дверний проріз)
+    targetLoc.x = 2.0; 
+    targetLoc.y = 2.5;
+
+    // ДАХ (Накриває всі чотири точки)
+    ctx.fillStyle = "#ecf0f1";
+    ctx.beginPath();
+    ctx.moveTo(p0.x, p0.y - th); ctx.lineTo(p1.x, p1.y - th);
+    ctx.lineTo(p2.x, p2.y - th); ctx.lineTo(p3.x, p3.y - th);
+    ctx.fill();
+}
+
+// Допоміжна функція для контуру (якщо її ще немає)
+    function drawIsoShapeOutline(points) {
+        ctx.beginPath();
+        points.forEach((pt, i) => {
+            const s = toScreen(pt.gx, pt.gy, pt.gz);
+            if (i === 0) ctx.moveTo(s.x, s.y);
+            else ctx.lineTo(s.x, s.y);
+        });
+        ctx.closePath();
+        ctx.stroke();
+    }
+
+// Допоміжна функція для малювання будь-якої ізометричної форми за координатами сітки
+function drawIsoShape(points) {
+    ctx.beginPath();
+    points.forEach((pt, i) => {
+        const s = toScreen(pt.gx, pt.gy, pt.gz);
+        if (i === 0) ctx.moveTo(s.x, s.y);
+        else ctx.lineTo(s.x, s.y);
+    });
+    ctx.closePath();
+    ctx.fill();
+}
+
+function drawIsoWindow(x, y, w, h) {
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + w, y - w/2);
+    ctx.lineTo(x + w, y - w/2 - h);
+    ctx.lineTo(x, y - h);
+    ctx.closePath();
+    ctx.fill();
+}
+
+ player.animationSpeed = 0.15;
+  player.animationFrame = 0;
+
+  function drawWorker(x, y) {
+    const pos = toScreen(x, y);
+    const uniformColor = "#16213e"; 
+    const capColor = "#0f172a";     
+    const skinColor = "#ffdbac";
+    const logoColor = "#ffffff";
+
+    if (player.state === 'walking') {
+      player.animationFrame = (player.animationFrame + player.animationSpeed) % 4;
+    } else if (player.state === 'working') {
+      player.animationFrame = (player.animationFrame + 0.3) % 2;
+    }
+    const frame = Math.floor(player.animationFrame);
+
+    // Тінь
+    ctx.beginPath();
+    ctx.ellipse(pos.x, pos.y + 12, 8, 4, 0, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(0,0,0,0.4)";
+    ctx.fill();
+
+    // Ноги
+    ctx.fillStyle = uniformColor;
+    let legMove = (player.state === 'walking' && frame % 2 === 0) ? -4 : 0;
+    ctx.fillRect(pos.x - 7, pos.y - 10 + legMove, 5, 14);
+    ctx.fillRect(pos.x + 2, pos.y - 10 - legMove, 5, 14);
+    
+    // Тіло
+    ctx.fillStyle = uniformColor;
+    ctx.fillRect(pos.x - 9, pos.y - 28, 18, 20);
+
+    // Літера А на спині (якщо йде вгору або працює)
+    if (player.isBack || player.state === 'working') {
+        ctx.fillStyle = logoColor;
+        ctx.font = "bold 11px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText("A", pos.x, pos.y - 16);
+    }
+
+    // Руки
+    ctx.fillStyle = skinColor;
+    let armWobble = (player.state === 'working') ? (frame === 0 ? -3 : 3) : 0;
+    ctx.fillRect(pos.x - 13, pos.y - 25 + armWobble, 4, 10);
+    ctx.fillRect(pos.x + 9, pos.y - 25 - armWobble, 4, 10);
+    
+    // Викрутка (тільки при роботі)
+    if (player.state === 'working') {
+        ctx.fillStyle = "#95a5a6";
+        ctx.fillRect(pos.x - 14, pos.y - 32 + armWobble, 2, 10);
+    }
+
+    // Голова
+    ctx.fillStyle = skinColor;
+    ctx.beginPath(); ctx.arc(pos.x, pos.y - 34, 6, 0, Math.PI * 2); ctx.fill();
+
+    // Кепі
+    ctx.fillStyle = capColor;
+    ctx.beginPath(); ctx.ellipse(pos.x, pos.y - 37, 7, 5, 0, 0, Math.PI * 2); ctx.fill();
+    
+    // Динамічний козирок
+    ctx.beginPath();
+    if (player.isBack || player.state === 'working') {
+        // Козирок вліво-вгору (назад)
+        ctx.ellipse(pos.x - 4, pos.y - 37, 5, 2, Math.PI / 4, 0, Math.PI * 2);
+    } else {
+        // Козирок вправо-вниз (вперед)
+        ctx.ellipse(pos.x + 4, pos.y - 35, 6, 2, -Math.PI / 8, 0, Math.PI * 2);
+    }
+    ctx.fill();
+  }
+
+  function createDust(x, y) {
+    const p = toScreen(x, y);
+    for(let i=0; i<2; i++) {
+        particles.push({x: p.x + 10, y: p.y - 5, vx: Math.random()-0.5, vy: -Math.random()*0.5, a: 1});
+    }
+  }
+  
+
+
+ function update() {
+    let dx = player.tx - player.x;
+    let dy = player.ty - player.y;
+    let d = Math.sqrt(dx*dx + dy*dy);
+
+    let distToTarget = Math.sqrt(
+      Math.pow(player.x - targetLoc.x, 2) + 
+      Math.pow(player.y - targetLoc.y, 2)
+    );
+
+    if (distToTarget > 1.5) {
+      player.canWork = true;
+    }
+    
+    if (d > 0.1 && player.state !== 'working') {
+      player.x += dx * 0.06; 
+      player.y += dy * 0.06;
+      player.state = 'walking';
+      
+      // Логіка повороту: якщо персонаж рухається вгору по екрану (зменшення X або Y)
+      // В ізометрії напрямок "назад" — це коли сума координат зменшується
+      player.isBack = (dx + dy < 0); 
+      
+    } else if (player.state === 'walking') {
+      player.state = 'idle';
+      if (distToTarget < 0.6 && player.canWork) {
+        startWork();
+      }
+    }
+
+    particles.forEach((p, i) => {
+        p.x += p.vx; p.y += p.vy; p.a -= 0.03;
+        if(p.a <= 0) particles.splice(i, 1);
+    });
+
+    render();
+    requestAnimationFrame(update);
+  }
+
+  function startWork() {
+    player.canWork = false; // Блокуємо повторний запуск
+    player.state = 'working';
+    player.x = targetLoc.x; 
+    player.y = targetLoc.y;
+    
+    progressWrapper.style.display = 'block';
+    let start = Date.now();
+    
+    let timer = setInterval(() => {
+      let elapsed = Date.now() - start;
+      let percent = (elapsed / 3000) * 100;
+      progressBar.style.width = percent + '%';
+      
+      // Рахуємо люд/год (0 до 2.0)
+      let manHours = (elapsed / 1500).toFixed(1);
+      infoText.innerText = `Ремонт дверного упора: ${manHours} люд/год`;
+      
+      createDust(player.x, player.y);
+
+      if (elapsed >= 3000) {
+        clearInterval(timer);
+        player.state = 'idle';
+        progressWrapper.style.display = 'none';
+        infoText.innerText = "Упор замінено! (+2.0 люд/год) ✅";
+        
+        // Підказка для гравця
+        setTimeout(() => {
+          if (player.state === 'idle') {
+            infoText.innerText = "Перейдіть до наступного завдання.";
+          }
+        }, 2000);
+
+        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+      }
+    }, 50);
+  }
+
+  function render() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // Подвір'я
+    for(let x=0; x<10; x++) {
+        for(let y=-10; y<10; y++) {
+            const p = toScreen(x, y);
+            ctx.fillStyle = (x+y)%2===0 ? "#bdc3c7" : "#a3aeb1";
+            ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x+tileW/2, p.y+tileH/2);
+            ctx.lineTo(p.x, p.y+tileH); ctx.lineTo(p.x-tileW/2, p.y+tileH/2); ctx.fill();
+			// Додамо тонку сітку для ефекту плитки
+        ctx.strokeStyle = "#9c9c9c";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        }
+    }
+    drawHouse();
+    drawWorker(player.x, player.y);
+    particles.forEach(p => {
+        ctx.fillStyle = `rgba(236, 240, 241, ${p.a})`;
+        ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI*2); ctx.fill();
+    });
+  }
+
+  canvas.onclick = (e) => {
+    if (player.state === 'working') return;
+    const mx = e.clientX - canvas.width / 2;
+    const my = e.clientY - canvas.height / 1.8;
+    player.tx = (my / (tileH/2) + mx / (tileW/2)) / 2;
+    player.ty = (my / (tileH/2) - mx / (tileW/2)) / 2;
+  };
+
+  update();
+</script>
+</body>
+</html>
