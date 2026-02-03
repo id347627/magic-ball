@@ -29,8 +29,7 @@
       justify-content: center; 
       position: relative; 
       box-shadow: 0 20px 50px rgba(0,0,0,0.9);
-      transition: transform 0.1s ease-out;
-      will-change: transform, filter;
+      will-change: transform;
     }
 
     #window { 
@@ -54,34 +53,31 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: transform 0.3s ease-out, opacity 1.8s cubic-bezier(0.22, 1, 0.36, 1);
+      /* Плавний перехід для ефекту плавання */
+      transition: transform 0.2s cubic-bezier(0.33, 1, 0.68, 1), opacity 1.8s ease-in-out;
       will-change: transform, opacity;
-      /* Початкове центрування */
-      transform: translate(0, 0); 
     }
 
     #triangle {
-      width: 220px;
-      height: 190px;
+      width: 210px;
+      height: 185px;
       background: radial-gradient(circle at 50% 60%, #2a4fa3 0%, #1a3a8a 50%, #0e1e4d 100%);
       
-      /* Вигнута форма трикутника */
-      clip-path: path('M110 0 C140 60 220 150 220 170 C220 190 180 190 110 190 C40 190 0 190 0 170 C0 150 80 60 110 0 Z');
+      /* Вигнута форма, що повторює вигин кулі */
+      clip-path: path('M105 5 C135 60 210 145 210 165 C210 185 170 185 105 185 C40 185 0 185 0 165 C0 145 75 60 105 5 Z');
       
       position: relative;
       display: flex;
       justify-content: center;
       
-      /* margin-top встановлено так, щоб трикутник був у центрі вікна (170px) */
-      /* і всі краї ховалися однаково */
-      margin-top: -15px; 
+      /* Центрування всередині контейнера */
+      margin-top: -10px; 
       
-      box-shadow: inset 0 -10px 20px rgba(0,0,0,0.5);
-      filter: drop-shadow(0 0 12px rgba(0,0,0,0.8));
+      filter: drop-shadow(0 0 10px rgba(0,0,0,0.8));
       overflow: hidden;
     }
 
-    /* Шар зернистості */
+    /* Шар зернистості (пластик) */
     #triangle::before {
       content: '';
       position: absolute;
@@ -96,18 +92,18 @@
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%);
+      background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 60%);
       pointer-events: none;
     }
 
     #answer { 
       position: absolute;
-      top: 65px; 
+      top: 62px; 
       color: #a8caff; 
       font-weight: bold; 
       font-size: 14px; 
       text-align: center;
-      width: 115px;
+      width: 105px;
       line-height: 1.1;
       text-transform: uppercase; 
       text-shadow: 0 0 8px rgba(127, 176, 255, 0.8);
@@ -119,22 +115,19 @@
 
     #answer.initial {
       font-size: 70px;
-      top: 55px; 
+      top: 50px; 
       height: 90px;
       width: 100%;
     }
 
     .shake-anim { 
-      animation: realisticShake 0.4s infinite alternate; 
-      filter: blur(1px); 
+      animation: realisticShake 0.15s infinite alternate; 
+      filter: blur(1px);
     }
 
     @keyframes realisticShake {
       0% { transform: translate(0, 0) rotate(0deg); }
-      25% { transform: translate(8px, -4px) rotate(2deg); }
-      50% { transform: translate(-10px, 6px) rotate(-3deg); }
-      75% { transform: translate(6px, 10px) rotate(1.5deg); }
-      100% { transform: translate(-4px, -8px) rotate(-1deg); }
+      100% { transform: translate(10px, -8px) rotate(3deg); }
     }
 
     #instruction {
@@ -181,41 +174,26 @@
     tg.expand();
 
     const answers = [
-        "Запитай пізніше", "Так, безперечно", "Перспективи не дуже добрі",
-        "Можеш на це покластися", "Моя відповідь — ні", "Це безсумнівно",
-        "Наразі неможливо передбачити", "Знаки вказують на «так»", "Дуже сумнівно",
-        "Як на мене — так", "Зосередься і запитай знову", "Так",
+        "Запитай пізніше", "Так, безперечно", "Перспективи не дуже добрі", "Можеш на це покластися",
+        "Моя відповідь — ні", "Це безсумнівно", "Наразі неможливо передбачити", "Знаки вказують на «так»",
+        "Дуже сумнівно", "Як на мене — так", "Зосередься і запитай знову", "Так",
         "Мої джерела кажуть «ні»", "Без жодних сумнівів", "Бачення нечітке, спробуй ще раз",
-        "Не розраховуй на це", "Перспективи хороші", "Саме так",
-        "Краще не казати тобі зараз", "Найімовірніше"
+        "Не розраховуй на це", "Перспективи хороші", "Саме так", "Краще не казати тобі зараз", "Найімовірніше"
     ];
 
     let isShaking = false;
     let resetTimer;
-    // Зберігаємо поточне зміщення від нахилу
-    let tiltX = 0;
-    let tiltY = 0;
-    // Зберігаємо випадкове зміщення після трясіння
-    let floatX = 0;
-    let floatY = 0;
-    let floatRotation = 0;
-
     const ball = document.getElementById('ball');
     const container = document.getElementById('triangle-container');
     const ansText = document.getElementById('answer');
     const instruction = document.getElementById('instruction');
     const btn = document.getElementById('desktop-btn');
 
-    function updateContainerTransform() {
-      // Комбінуємо нахил телефону + випадковий дрейф у рідині
-      container.style.transform = `translate(${tiltX + floatX}px, ${tiltY + floatY}px) rotate(${floatRotation}deg)`;
-    }
-
     function initTelegramSensors() {
       if (tg.Accelerometer) {
         tg.Accelerometer.start({ refresh_rate: 20 }, (success) => {
           if (success) {
-            instruction.innerText = "Зосередься на питанні та потряси телефон📱";
+            instruction.innerText = "Зосередься на питанні та потряси телефон 📱";
             tg.onEvent('accelerometerChanged', () => {
               const { x, y, z } = tg.Accelerometer;
               const totalAcc = Math.sqrt(x*x + y*y + z*z);
@@ -231,10 +209,12 @@
             tg.onEvent('deviceOrientationChanged', () => {
               if (isShaking) return;
               const { gamma, beta } = tg.DeviceOrientation;
-              // Чутливість нахилу (ділимо на 2 для плавності)
-              tiltX = (gamma || 0) / 2;
-              tiltY = (beta - 45) / 2;
-              updateContainerTransform();
+              
+              // Обмежуємо рух, щоб трикутник не виходив занадто сильно
+              const moveX = (gamma || 0) / 2.5; 
+              const moveY = (beta - 45) / 2.5; 
+              
+              container.style.transform = `translate(${moveX}px, ${moveY}px)`;
             });
           }
         });
@@ -253,21 +233,20 @@
 
       setTimeout(() => {
         ball.classList.remove('shake-anim');
-        
         const randomAnswer = answers[Math.floor(Math.random() * answers.length)];
         ansText.innerText = randomAnswer;
         ansText.className = ""; 
 
-        // Додаємо ефект "зависання" в новому положенні
-        floatRotation = (Math.random() * 10 - 5);
-        floatX = (Math.random() * 14 - 7);
-        floatY = (Math.random() * 10 - 5);
+        // Ефект "спливання" у випадковому положенні
+        const randomTilt = (Math.random() * 6 - 3);
+        const randomX = (Math.random() * 10 - 5);
+        const randomY = (Math.random() * 8 - 4);
 
-        updateContainerTransform();
+        container.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${randomTilt}deg)`;
         container.style.opacity = "1";
 
         isShaking = false;
-        resetTimer = setTimeout(resetBall, 10000);
+        resetTimer = setTimeout(resetBall, 15000);
       }, 800);
     }
 
@@ -276,26 +255,19 @@
       setTimeout(() => {
         ansText.innerText = "?";
         ansText.className = "initial";
-        floatX = 0; floatY = 0; floatRotation = 0;
-        updateContainerTransform();
+        container.style.transform = "translate(0,0) rotate(0deg)";
         container.style.opacity = "1";
       }, 600);
     }
 
-    const isMobile = ['android', 'ios'].includes(tg.platform);
-    if (isMobile) {
+    if (['android', 'ios'].includes(tg.platform)) {
       if (tg.version >= "8.0") initTelegramSensors();
-      else instruction.innerText = "Оновіть Telegram для сенсорів.";
+      else instruction.innerText = "Оновіть Telegram для роботи сенсорів.";
     } else {
       instruction.innerText = "Зосередься на питанні та натисни кнопку.";
     }
 
     btn.onclick = shakeBall;
-
-    window.addEventListener('beforeunload', () => {
-      if (tg.Accelerometer) tg.Accelerometer.stop();
-      if (tg.DeviceOrientation) tg.DeviceOrientation.stop();
-    });
   </script>
 </body>
 </html>
