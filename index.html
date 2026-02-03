@@ -30,7 +30,7 @@
       position: relative; 
       box-shadow: 0 20px 50px rgba(0,0,0,0.9);
       transition: transform 0.1s ease-out;
-	  will-change: transform, filter;
+      will-change: transform, filter;
     }
 
     #window { 
@@ -48,114 +48,94 @@
     }
 
     #triangle-container {
-    position: absolute;
-    width: 240px; 
-    height: 240px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    /* Покращений перехід для ефекту спливання у в'язкій рідині */
-    transition: transform 0.3s ease-out, opacity 1.8s cubic-bezier(0.22, 1, 0.36, 1);
-    will-change: transform, opacity;
-}
+      position: absolute;
+      width: 240px; 
+      height: 240px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.3s ease-out, opacity 1.8s cubic-bezier(0.22, 1, 0.36, 1);
+      will-change: transform, opacity;
+      /* Початкове центрування */
+      transform: translate(0, 0); 
+    }
 
-#triangle {
-    width: 220px;
-    height: 190px;
-    /* Сферичний градієнт створює ілюзію випуклої поверхні */
-    background: radial-gradient(circle at 50% 60%, #2a4fa3 0%, #1a3a8a 50%, #0e1e4d 100%);
-    
-    /* clip-path з кривими лініями замість гострих прямих */
-    /* Ця фігура імітує проекцію трикутника на сферу */
-    clip-path: polygon(50% 0%, 100% 85%, 85% 100%, 15% 100%, 0% 85%);
-    /* Більш реалістична вигнута форма через кубічні криві (альтернатива) */
-    clip-path: path('M110 0 C140 60 220 150 220 170 C220 190 180 190 110 190 C40 190 0 190 0 170 C0 150 80 60 110 0 Z');
-    
-    position: relative;
-    display: flex;
-    justify-content: center;
-    
-    /* Трохи піднімаємо, щоб краї ховалися за вікном */
-    margin-top: -55px; 
-    
-    /* Тінь та внутрішній відблиск */
-    box-shadow: inset 0 -10px 20px rgba(0,0,0,0.5);
-    filter: drop-shadow(0 0 12px rgba(0,0,0,0.8));
-	
-	position: relative;
-    overflow: hidden;
-}
+    #triangle {
+      width: 220px;
+      height: 190px;
+      background: radial-gradient(circle at 50% 60%, #2a4fa3 0%, #1a3a8a 50%, #0e1e4d 100%);
+      
+      /* Вигнута форма трикутника */
+      clip-path: path('M110 0 C140 60 220 150 220 170 C220 190 180 190 110 190 C40 190 0 190 0 170 C0 150 80 60 110 0 Z');
+      
+      position: relative;
+      display: flex;
+      justify-content: center;
+      
+      /* margin-top встановлено так, щоб трикутник був у центрі вікна (170px) */
+      /* і всі краї ховалися однаково */
+      margin-top: -15px; 
+      
+      box-shadow: inset 0 -10px 20px rgba(0,0,0,0.5);
+      filter: drop-shadow(0 0 12px rgba(0,0,0,0.8));
+      overflow: hidden;
+    }
 
-/* Ефект грані (світло на ребрах) */
-#triangle::after {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 50%);
-    pointer-events: none;
-}
+    /* Шар зернистості */
+    #triangle::before {
+      content: '';
+      position: absolute;
+      top: -50%; left: -50%; width: 200%; height: 200%;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+      opacity: 0.12;
+      pointer-events: none;
+      mix-blend-mode: overlay;
+    }
 
-/* Шар зернистості */
-#triangle::before {
-    content: '';
-    position: absolute;
-    top: -50%; left: -50%; width: 200%; height: 200%;
-    /* Генерація візуального шуму */
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-    opacity: 0.15; /* Наскільки сильно видно зерно */
-    pointer-events: none;
-    mix-blend-mode: overlay;
-}
+    #triangle::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%);
+      pointer-events: none;
+    }
 
-#answer { 
-    position: absolute;
-    top: 85px; /* Коригуємо позицію під нову форму */
-    color: #a8caff; 
-    font-weight: bold; 
-    font-size: 14px; 
-    text-align: center;
-    width: 110px;
-    line-height: 1.1;
-    text-transform: uppercase; 
-    /* Текст ніби світиться крізь воду */
-    text-shadow: 0 0 8px rgba(127, 176, 255, 0.8);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 70px;
-    transform: perspective(100px) rotateX(10deg); /* Нахил тексту для перспективи */
-}
+    #answer { 
+      position: absolute;
+      top: 65px; 
+      color: #a8caff; 
+      font-weight: bold; 
+      font-size: 14px; 
+      text-align: center;
+      width: 115px;
+      line-height: 1.1;
+      text-transform: uppercase; 
+      text-shadow: 0 0 8px rgba(127, 176, 255, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 70px;
+    }
 
-#answer.initial {
-    font-size: 70px;
-    top: 75px; 
-    height: 90px;
-    width: 100%;
-    transform: none;
-}
+    #answer.initial {
+      font-size: 70px;
+      top: 55px; 
+      height: 90px;
+      width: 100%;
+    }
 
     .shake-anim { 
-  animation: realisticShake 0.4s infinite alternate; 
-  filter: blur(1px); /* Легке розмиття при русі */
-}
+      animation: realisticShake 0.4s infinite alternate; 
+      filter: blur(1px); 
+    }
 
-@keyframes realisticShake {
-  0% { 
-    transform: translate(0, 0) rotate(0deg); 
-  }
-  25% { 
-    transform: translate(8px, -4px) rotate(2deg); 
-  }
-  50% { 
-    transform: translate(-10px, 6px) rotate(-3deg); 
-  }
-  75% { 
-    transform: translate(6px, 10px) rotate(1.5deg); 
-  }
-  100% { 
-    transform: translate(-4px, -8px) rotate(-1deg); 
-  }
-}
+    @keyframes realisticShake {
+      0% { transform: translate(0, 0) rotate(0deg); }
+      25% { transform: translate(8px, -4px) rotate(2deg); }
+      50% { transform: translate(-10px, 6px) rotate(-3deg); }
+      75% { transform: translate(6px, 10px) rotate(1.5deg); }
+      100% { transform: translate(-4px, -8px) rotate(-1deg); }
+    }
 
     #instruction {
       margin-top: 40px;
@@ -201,68 +181,60 @@
     tg.expand();
 
     const answers = [
-		"Запитай пізніше",
-		"Так, безперечно",
-		"Перспективи не дуже добрі",
-		"Можеш на це покластися",
-		"Моя відповідь — ні",
-		"Це безсумнівно",
-		"Наразі неможливо передбачити",
-		"Знаки вказують на «так»",
-		"Дуже сумнівно",
-		"Як на мене — так",
-		"Зосередься і запитай знову",
-		"Так",
-		"Мої джерела кажуть «ні»",
-		"Без жодних сумнівів",
-		"Бачення нечітке, спробуй ще раз",
-		"Не розраховуй на це",
-		"Перспективи хороші",
-		"Саме так",
-		"Краще не казати тобі зараз",
-		"Найімовірніше"
+        "Запитай пізніше", "Так, безперечно", "Перспективи не дуже добрі",
+        "Можеш на це покластися", "Моя відповідь — ні", "Це безсумнівно",
+        "Наразі неможливо передбачити", "Знаки вказують на «так»", "Дуже сумнівно",
+        "Як на мене — так", "Зосередься і запитай знову", "Так",
+        "Мої джерела кажуть «ні»", "Без жодних сумнівів", "Бачення нечітке, спробуй ще раз",
+        "Не розраховуй на це", "Перспективи хороші", "Саме так",
+        "Краще не казати тобі зараз", "Найімовірніше"
     ];
 
     let isShaking = false;
     let resetTimer;
+    // Зберігаємо поточне зміщення від нахилу
+    let tiltX = 0;
+    let tiltY = 0;
+    // Зберігаємо випадкове зміщення після трясіння
+    let floatX = 0;
+    let floatY = 0;
+    let floatRotation = 0;
+
     const ball = document.getElementById('ball');
     const container = document.getElementById('triangle-container');
     const ansText = document.getElementById('answer');
     const instruction = document.getElementById('instruction');
     const btn = document.getElementById('desktop-btn');
 
-    // 1. ЛОГІКА СЕНСОРІВ ЧЕРЕЗ TELEGRAM API (v8.0+)
+    function updateContainerTransform() {
+      // Комбінуємо нахил телефону + випадковий дрейф у рідині
+      container.style.transform = `translate(${tiltX + floatX}px, ${tiltY + floatY}px) rotate(${floatRotation}deg)`;
+    }
+
     function initTelegramSensors() {
-      // Акселерометр для трясіння
       if (tg.Accelerometer) {
         tg.Accelerometer.start({ refresh_rate: 20 }, (success) => {
           if (success) {
             instruction.innerText = "Зосередься на питанні та потряси телефон📱";
-            
             tg.onEvent('accelerometerChanged', () => {
               const { x, y, z } = tg.Accelerometer;
               const totalAcc = Math.sqrt(x*x + y*y + z*z);
-              
-              // Якщо сила трясіння більше порогу
-              if (totalAcc > 22 && !isShaking) {
-                shakeBall();
-              }
+              if (totalAcc > 22 && !isShaking) shakeBall();
             });
           }
         });
       }
 
-      // Гіроскоп для плавного нахилу трикутника
       if (tg.DeviceOrientation) {
         tg.DeviceOrientation.start({ refresh_rate: 40 }, (success) => {
           if (success) {
             tg.onEvent('deviceOrientationChanged', () => {
               if (isShaking) return;
               const { gamma, beta } = tg.DeviceOrientation;
-              // Плавне зміщення трикутника всередині
-              const moveX = (gamma || 0) / 1.5;
-              const moveY = (beta - 45) / 1.5;
-              container.style.transform = `translate(${moveX}px, ${moveY}px)`;
+              // Чутливість нахилу (ділимо на 2 для плавності)
+              tiltX = (gamma || 0) / 2;
+              tiltY = (beta - 45) / 2;
+              updateContainerTransform();
             });
           }
         });
@@ -270,73 +242,60 @@
     }
 
     function shakeBall() {
-    if (isShaking) return;
-    isShaking = true;
-    clearTimeout(resetTimer);
-    
-    container.style.opacity = "0"; // Ховаємо трикутник
-    ball.classList.add('shake-anim');
+      if (isShaking) return;
+      isShaking = true;
+      clearTimeout(resetTimer);
+      
+      container.style.opacity = "0";
+      ball.classList.add('shake-anim');
 
-    if (tg.HapticFeedback) {
-        tg.HapticFeedback.notificationOccurred('success');
-    }
+      if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
 
-    setTimeout(() => {
+      setTimeout(() => {
         ball.classList.remove('shake-anim');
         
-        // Вибираємо відповідь
         const randomAnswer = answers[Math.floor(Math.random() * answers.length)];
         ansText.innerText = randomAnswer;
         ansText.className = ""; 
 
-        // --- ПОКРАЩЕННЯ ТУТ ---
-        // Створюємо випадковий "неідеальний" нахил та зміщення (ефект плавання)
-        const randomTilt = (Math.random() * 8 - 4); // Від -4 до 4 градусів
-        const randomShiftX = (Math.random() * 12 - 6); // Від -6px до 6px
-        const randomShiftY = (Math.random() * 10 - 5); // Від -5px до 5px
+        // Додаємо ефект "зависання" в новому положенні
+        floatRotation = (Math.random() * 10 - 5);
+        floatX = (Math.random() * 14 - 7);
+        floatY = (Math.random() * 10 - 5);
 
-        // Застосовуємо трансформацію перед появою
-        container.style.transform = `translate(${randomShiftX}px, ${randomShiftY}px) rotate(${randomTilt}deg)`;
-        
-        // Плавна поява завдяки cubic-bezier у CSS
+        updateContainerTransform();
         container.style.opacity = "1";
-        // ----------------------
 
         isShaking = false;
-        resetTimer = setTimeout(resetBall, 10000); // Скидання через 10 сек
-    }, 800); // Тривалість трясіння
-}
+        resetTimer = setTimeout(resetBall, 10000);
+      }, 800);
+    }
 
     function resetBall() {
       container.style.opacity = "0";
       setTimeout(() => {
         ansText.innerText = "?";
         ansText.className = "initial";
+        floatX = 0; floatY = 0; floatRotation = 0;
+        updateContainerTransform();
         container.style.opacity = "1";
       }, 600);
     }
 
-    // Ініціалізація
     const isMobile = ['android', 'ios'].includes(tg.platform);
-    
     if (isMobile) {
-      if (tg.version >= "8.0") {
-        initTelegramSensors();
-      } else {
-        instruction.innerText = "Оновіть Telegram для роботи сенсорів без дозволів.";
-      }
+      if (tg.version >= "8.0") initTelegramSensors();
+      else instruction.innerText = "Оновіть Telegram для сенсорів.";
     } else {
-      instruction.innerText = "Зосередься на питанні та натисніть кнопку.";
+      instruction.innerText = "Зосередься на питанні та натисни кнопку.";
     }
 
     btn.onclick = shakeBall;
 
-    // Зупинка сенсорів при закритті для економії батареї
     window.addEventListener('beforeunload', () => {
       if (tg.Accelerometer) tg.Accelerometer.stop();
       if (tg.DeviceOrientation) tg.DeviceOrientation.stop();
     });
-
   </script>
 </body>
 </html>
