@@ -75,12 +75,13 @@
     };
 
     let particles = [];
-    const bushData = [];
+    const bushDataL = [];
+    const bushDataR = [];
 
     // --- Initialization ---
-    function initBushes() {
-        for (let gy = -9; gy <= 9; gy += 0.4) {
-            if (gy < 0.5 || gy > 4.5) {
+    function initBushesL() {
+        for (let gy = -9; gy <= 1; gy += 0.4) {
+            if (gy < .9 || gy > 4.5) {
                 const jitterY = (Math.random() - 0.5) * 0.5;
                 const baseSize = 12 + Math.random() * 8;
                 const blobs = Array.from({length: 5}, () => ({
@@ -90,7 +91,24 @@
                     color: ['#2d4a27', '#3a6d32', '#4e8344'][Math.floor(Math.random() * 3)],
                     hasHighlight: Math.random() > 0.6
                 }));
-                bushData.push({ gx: 0.5, gy: gy + jitterY, baseSize, blobs });
+                bushDataL.push({ gx: 0.5, gy: gy + jitterY, baseSize, blobs });
+            }
+        }
+    }
+	
+	function initBushesR() {
+        for (let gy = 4; gy <= 9; gy += 0.4) {
+            if (gy < 0.5 || gy > 3.5) {
+                const jitterY = (Math.random() - 0.5) * 0.5;
+                const baseSize = 12 + Math.random() * 8;
+                const blobs = Array.from({length: 5}, () => ({
+                    ox: (Math.random() - 0.5) * baseSize,
+                    oy: (Math.random() - 0.5) * baseSize - 5,
+                    r: baseSize * (0.5 + Math.random() * 0.5),
+                    color: ['#2d4a27', '#3a6d32', '#4e8344'][Math.floor(Math.random() * 3)],
+                    hasHighlight: Math.random() > 0.6
+                }));
+                bushDataR.push({ gx: 0.5, gy: gy + jitterY, baseSize, blobs });
             }
         }
     }
@@ -106,7 +124,8 @@
     }
     window.onresize = resize;
     resize();
-    initBushes();
+    initBushesL();
+    initBushesR();
 
     // --- Drawing Helpers ---
     function drawIsoPath(points, fill, stroke, weight = 1) {
@@ -125,7 +144,7 @@
         ctx.fill();
         ctx.globalCompositeOperation = 'source-over';
     }
-
+	
     function drawWorld() {
         // 1. Ground with Screen Culling
         const range = 22; 
@@ -170,7 +189,7 @@
             });
         }
 		
-        drawStaticBushes();
+        drawStaticBushes(bushDataL);
 
         // 4. Tambour Structure
         const th = CONFIG.tambourH;
@@ -190,6 +209,8 @@
         // Glass
         drawIsoPath([{gx:1,gy:1.1,gz:5},{gx:1,gy:2,gz:5},{gx:1,gy:2,gz:110},{gx:1,gy:1.1,gz:110}], CONFIG.colors.glass, CONFIG.colors.anthracite, 1);
         drawIsoPath([{gx:1,gy:3,gz:5},{gx:1,gy:3.9,gz:5},{gx:1,gy:3.9,gz:110},{gx:1,gy:3,gz:110}], CONFIG.colors.glass, CONFIG.colors.anthracite, 1);
+		
+		drawStaticBushes(bushDataR);
 
         // Door
         const hinge = toScreen(1, 2.05, 0), edge = toScreen(1.7, 2.05, 0);
@@ -218,7 +239,7 @@
         ctx.beginPath(); ctx.moveTo(s1.x, s1.y); ctx.lineTo(s2.x, s2.y); ctx.stroke();
     }
 
-    function drawStaticBushes() {
+    function drawStaticBushes(bushData) {
         bushData.forEach(bush => {
             const pos = toScreen(bush.gx, bush.gy);
             ctx.fillStyle = "rgba(0,0,0,0.15)";
@@ -236,54 +257,71 @@
     }
 
     function drawWorker() {
-        const pos = toScreen(player.x, player.y);
-        if (player.state === 'walking') player.animFrame = (player.animFrame + 0.15) % 4;
-        if (player.state === 'working') player.animFrame = (player.animFrame + 0.25) % 2;
-        const frame = Math.floor(player.animFrame);
+    const pos = toScreen(player.x, player.y);
+    if (player.state === 'walking') player.animFrame = (player.animFrame + 0.15) % 4;
+    if (player.state === 'working') player.animFrame = (player.animFrame + 0.25) % 2;
+    const frame = Math.floor(player.animFrame);
 
-        ctx.save();
-        ctx.fillStyle = "rgba(0,0,0,0.3)";
-        ctx.beginPath(); ctx.ellipse(pos.x, pos.y + 8, 8, 4, 0, 0, Math.PI*2); ctx.fill();
+    ctx.save();
+    
+    ctx.fillStyle = "rgba(0,0,0,0.3)";
+    ctx.beginPath(); 
+    ctx.ellipse(pos.x, pos.y + 16, 16, 8, 0, 0, Math.PI * 2); 
+    ctx.fill();
 
-        ctx.fillStyle = "#16213e";
-        const lY = (player.state === 'walking' && frame%2===0) ? -3 : 0;
-        const rY = (player.state === 'walking' && frame%2===1) ? -3 : 0;
-        ctx.fillRect(pos.x - 7, pos.y - 10 + lY, 5, 12);
-        ctx.fillRect(pos.x + 2, pos.y - 10 + rY, 5, 12);
-        ctx.fillRect(pos.x - 9, pos.y - 28, 18, 20);
-		
-		if (player.isBack || player.state === 'working') {
+    // Body & Legs
+    ctx.fillStyle = "#16213e";
+    const lY = (player.state === 'walking' && frame % 2 === 0) ? -6 : 0;
+    const rY = (player.state === 'walking' && frame % 2 === 1) ? -6 : 0;
+    
+    // Rects: [x, y, width, height] -> All values * 2
+    ctx.fillRect(pos.x - 14, pos.y - 20 + lY, 10, 31); // Left leg
+    ctx.fillRect(pos.x + 4, pos.y - 20 + rY, 10, 31);  // Right leg
+    ctx.fillRect(pos.x - 18, pos.y - 56, 36, 40);      // Torso
+
+    // Logo on back
+    if (player.isBack || player.state === 'working') {
         ctx.fillStyle = CONFIG.colors.logoColor;
-        ctx.font = "bold 11px Arial";
+        ctx.font = "bold 22px Arial"; // Doubled font
         ctx.textAlign = "center";
-        ctx.fillText("A", pos.x, pos.y - 16);
+        ctx.fillText("A", pos.x, pos.y - 32);
     }
 
-        ctx.fillStyle = CONFIG.colors.skinColor;
-        let wobble = (player.state === 'working') ? (frame === 0 ? -2 : 2) : 0;
-        ctx.fillRect(pos.x - 13, pos.y - 24 + wobble, 4, 10);
-        ctx.fillRect(pos.x + 9, pos.y - 24 - wobble, 4, 10);
-        
-        if (player.state === 'working') {
-            ctx.fillStyle = "#7f8c8d";
-            ctx.fillRect(pos.x - 14, pos.y - 30 + wobble, 2, 8);
-        }
+    // Arms
+    ctx.fillStyle = CONFIG.colors.skinColor;
+    let wobble = (player.state === 'working') ? (frame === 0 ? -4 : 4) : 0;
+    ctx.fillRect(pos.x - 26, pos.y - 48 + wobble, 8, 20); // Left arm
+    ctx.fillRect(pos.x + 18, pos.y - 48 - wobble, 8, 20); // Right arm
+    
+    // Screwdriver
+    if (player.state === 'working') {
+        ctx.fillStyle = "#7f8c8d";
+        ctx.fillRect(pos.x - 28, pos.y - 60 + wobble, 4, 16);
+    }
 
-        ctx.beginPath(); ctx.fillStyle = CONFIG.colors.skinColor;
-        ctx.arc(pos.x, pos.y - 34, 6, 0, Math.PI*2); ctx.fill();
-        ctx.beginPath(); ctx.fillStyle = CONFIG.colors.capColor;
-        ctx.ellipse(pos.x, pos.y - 37, 7, 5, 0, 0, Math.PI*2); ctx.fill();
-        
-		
-		ctx.beginPath();
+    // Head (Radius 6 * 2 = 12)
+    ctx.beginPath(); 
+    ctx.fillStyle = CONFIG.colors.skinColor;
+    ctx.arc(pos.x, pos.y - 68, 12, 0, Math.PI * 2); 
+    ctx.fill();
+
+    // Cap (Size 7x5 * 2 = 14x10)
+    ctx.beginPath(); 
+    ctx.fillStyle = CONFIG.colors.capColor;
+    ctx.ellipse(pos.x, pos.y - 74, 14, 10, 0, 0, Math.PI * 2); 
+    ctx.fill();
+    
+    // Cap Brim
+    ctx.beginPath();
     if (player.isBack || player.state === 'working') {
-        ctx.ellipse(pos.x - 4, pos.y - 37, 5, 2, Math.PI / 4, 0, Math.PI * 2);
+        ctx.ellipse(pos.x - 8, pos.y - 74, 10, 4, Math.PI / 4, 0, Math.PI * 2);
     } else {
-        ctx.ellipse(pos.x + 4, pos.y - 35, 6, 2, -Math.PI / 8, 0, Math.PI * 2);
+        ctx.ellipse(pos.x + 8, pos.y - 70, 12, 4, -Math.PI / 8, 0, Math.PI * 2);
     }
     ctx.fill();
-	ctx.restore();
-    }
+
+    ctx.restore();
+}
 
     function startWork() {
         player.state = 'working';
@@ -313,23 +351,46 @@
         }, 50);
     }
 
-    function update() {
-        if (player.state === 'walking') {
-            let dx = player.tx - player.x, dy = player.ty - player.y;
-            let dist = Math.sqrt(dx*dx + dy*dy);
-            if (dist > 0.1) {
-                let nx = player.x + (dx/dist) * player.speed;
-                let ny = player.y + (dy/dist) * player.speed;
-                // Simple wall collision
-                if (nx < 1.1) nx = player.x;
-                player.x = nx; player.y = ny;
-                player.isBack = (dx + dy < 0);
-            } else {
-                player.state = 'idle';
-                if (Math.abs(player.x - player.targetLoc.x) < 0.2) startWork();
+function update() {
+    if (player.state === 'walking') {
+        let dx = player.tx - player.x, dy = player.ty - player.y;
+        let dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist > 0.1) {
+            let nx = player.x + (dx / dist) * player.speed;
+            let ny = player.y + (dy / dist) * player.speed;
+
+            // 1. Convert predicted grid position to screen position
+            const screenPos = toScreen(nx, ny);
+            
+            // 2. Define safety margins (since worker is 2x bigger)
+            const marginX = 40; // Horizontal width of worker
+            const marginYTop = 80; // Height of worker
+            const marginYBot = 20; // Feet/Shadow area
+
+            // 3. Check Screen Boundaries
+            let canMoveX = screenPos.x > marginX && screenPos.x < canvas.width - marginX;
+            let canMoveY = screenPos.y > marginYTop && screenPos.y < canvas.height - marginYBot;
+
+            // 4. Simple wall collision (gx < 1.1)
+            if (nx < 1.1) canMoveX = false;
+
+            // Apply movement only if within screen and wall bounds
+            if (canMoveX) player.x = nx;
+            if (canMoveY) player.y = ny;
+
+            player.isBack = (dx + dy < 0);
+        } else {
+            player.state = 'idle';
+            const dX = player.x - player.targetLoc.x;
+            const dY = player.y - player.targetLoc.y;
+            const distToWork = Math.sqrt(dX * dX + dY * dY);
+            
+            if (distToWork < 0.5) {
+                startWork();
             }
-			player.isBack = (dx + dy < 0);
         }
+    }
         particles = particles.filter(p => { p.x += p.vx; p.y += p.vy; p.a -= 0.03; return p.a > 0; });
         
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -343,13 +404,25 @@
     }
 
     canvas.onclick = (e) => {
-        if (player.state === 'working') return;
-        const mx = e.clientX - canvas.width / 2;
-        const my = e.clientY - canvas.height / 1.8;
-        player.tx = Math.max(1.2, (my / (CONFIG.tileH/2) + mx / (CONFIG.tileW/2)) / 2);
-        player.ty = (my / (CONFIG.tileH/2) - mx / (CONFIG.tileW/2)) / 2;
-        player.state = 'walking';
-    };
+    if (player.state === 'working') return;
+    const mx = e.clientX - canvas.width / 2;
+    const my = e.clientY - canvas.height / 1.8;
+    
+    // Calculate raw target
+    let targetX = (my / (CONFIG.tileH/2) + mx / (CONFIG.tileW/2)) / 2;
+    let targetY = (my / (CONFIG.tileH/2) - mx / (CONFIG.tileW/2)) / 2;
+
+    // Boundary check for the click itself (don't set a target off-screen)
+    const targetScreen = toScreen(targetX, targetY);
+    if (targetScreen.x < 20 || targetScreen.x > canvas.width - 20 || 
+        targetScreen.y < 50 || targetScreen.y > canvas.height - 20) {
+        return; // Ignore clicks too close to edge
+    }
+
+    player.tx = Math.max(1.2, targetX);
+    player.ty = targetY;
+    player.state = 'walking';
+};
 
     update();
 </script>
