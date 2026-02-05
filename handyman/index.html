@@ -386,7 +386,7 @@ function update() {
             const dY = player.y - player.targetLoc.y;
             const distToWork = Math.sqrt(dX * dX + dY * dY);
             
-            if (distToWork < 0.5) {
+            if (distToWork < 1) {
                 startWork();
             }
         }
