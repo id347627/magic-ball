@@ -1,10 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html lang="uk">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Magic 8 Ball</title>
   <script src="https://telegram.org/js/telegram-web-app.js?v=8.0"></script>
   <style>
+    /* Reset & Base Styles */
+    * { box-sizing: border-box; }
+    
     body { 
       background: #1a1a1a; 
       display: flex; 
@@ -19,6 +23,7 @@
       touch-action: none;
     }
 
+    /* Main Ball Container */
     #ball { 
       width: 300px; 
       height: 300px; 
@@ -34,7 +39,7 @@
       overflow: hidden;
     }
 
-    /* Зернистість для корпусу кулі */
+    /* Grain/Noise Overlay */
     #ball::before {
       content: '';
       position: absolute;
@@ -46,6 +51,7 @@
       z-index: 1;
     }
 
+    /* Ball Window (The Portal) */
     #window { 
       width: 170px; 
       height: 170px; 
@@ -122,6 +128,7 @@
       transform: none;
     }
 
+    /* Animations */
     .shake-anim { 
       animation: realisticShake 0.4s infinite alternate; 
       filter: blur(1px);
@@ -135,9 +142,10 @@
       100% { transform: translate(-4px, -8px) rotate(-1deg); }
     }
 
+    /* UI Elements */
     #instruction {
       margin-top: 40px;
-      font-size: 14px;
+      font-size: 16px;
       text-align: center;
       padding: 0 20px;
       color: #888;
@@ -155,6 +163,11 @@
       font-weight: bold;
       cursor: pointer;
       box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+      transition: transform 0.1s;
+    }
+
+    #desktop-btn:active {
+      transform: scale(0.95);
     }
   </style>
 </head>
@@ -175,10 +188,9 @@
 
   <script>
     const tg = window.Telegram.WebApp;
-    tg.ready();
-    tg.expand();
-
-    const answers = [
+    
+    // Configuration
+    const ANSWERS = [
       "Запитай пізніше", "Так, безперечно", "Не дуже добрі перспективи",
       "Можеш на це покластися", "Моя відповідь — ні", "Це безсумнівно",
       "Наразі неможливо передбачити", "Знаки вказують на «так»", "Дуже сумнівно",
@@ -188,17 +200,23 @@
       "Краще не казати тобі зараз", "Найімовірніше"
     ];
 
+    // State
     let isShaking = false;
     let resetTimer;
     let targetX = 0, targetY = 0;
     let currentX = 0, currentY = 0;
     let currentTilt = 0;
 
+    // Elements
     const ball = document.getElementById('ball');
     const container = document.getElementById('triangle-container');
     const ansText = document.getElementById('answer');
     const instruction = document.getElementById('instruction');
     const btn = document.getElementById('desktop-btn');
+
+    // Initialize WebApp
+    tg.ready();
+    tg.expand();
 
     function initTelegramSensors() {
       if (tg.Accelerometer) {
@@ -223,53 +241,38 @@
               const { gamma, beta } = tg.DeviceOrientation;
               const orientation = window.orientation || 0;
 
-              // Корекція координат залежно від повороту екрана (0, 90, -90)
               let rawX, rawY;
               if (orientation === 90) {
-                rawX = -(beta - 45);
-                rawY = gamma;
+                rawX = -(beta - 45); rawY = gamma;
               } else if (orientation === -90) {
-                rawX = (beta - 45);
-                rawY = -gamma;
+                rawX = (beta - 45); rawY = -gamma;
               } else {
-                rawX = gamma;
-                rawY = (beta - 45);
+                rawX = gamma; rawY = (beta - 45);
               }
 
-              // Збільшено чутливість: дільник 1.0 замість 1.5
-              targetX = (rawX || 0) / 1.0;
-              targetY = (rawY || 0) / 1.0;
-
-              // Обмеження, щоб трикутник не випливав занадто далеко
-              targetX = Math.max(-25, Math.min(25, targetX));
-              targetY = Math.max(-25, Math.min(25, targetY));
+              targetX = Math.max(-25, Math.min(25, (rawX || 0)));
+              targetY = Math.max(-25, Math.min(25, (rawY || 0)));
             });
           }
         });
       }
     }
 
-    function animate() {
-      if (!isShaking) {
-        currentX += (targetX - currentX) * 0.15; // Швидша реакція (0.15)
-        currentY += (targetY - currentY) * 0.15;
-        const drift = Math.sin(Date.now() / 800) * 3; // Трохи сильніше блукання
-        container.style.transform = `translate(${currentX}px, ${currentY + drift}px) rotate(${currentTilt}deg)`;
-      }
-      requestAnimationFrame(animate);
-    }
-
     function shakeBall() {
       if (isShaking) return;
       isShaking = true;
+      
       clearTimeout(resetTimer);
       container.style.opacity = "0";
       ball.classList.add('shake-anim');
-      if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+      
+      if (tg.HapticFeedback) {
+        tg.HapticFeedback.notificationOccurred('success');
+      }
 
       setTimeout(() => {
         ball.classList.remove('shake-anim');
-        ansText.innerText = answers[Math.floor(Math.random() * answers.length)];
+        ansText.innerText = ANSWERS[Math.floor(Math.random() * ANSWERS.length)];
         ansText.className = ""; 
         currentTilt = (Math.random() * 10 - 5); 
         container.style.opacity = "1";
@@ -288,16 +291,33 @@
       }, 600);
     }
 
+    function animate() {
+      if (!isShaking) {
+        currentX += (targetX - currentX) * 0.15;
+        currentY += (targetY - currentY) * 0.15;
+        const drift = Math.sin(Date.now() / 800) * 3;
+        container.style.transform = `translate(${currentX}px, ${currentY + drift}px) rotate(${currentTilt}deg)`;
+      }
+      requestAnimationFrame(animate);
+    }
+
+    // Platform detection
     const isMobile = ['android', 'ios'].includes(tg.platform);
     if (isMobile && tg.version >= "8.0") {
+	  btn.style.display = 'none';
       initTelegramSensors();
-    } else if (!isMobile) {
+    } else {
+	  btn.style.display = 'block';
       instruction.innerText = "Натисніть кнопку, щоб отримати відповідь";
     }
 
+    // Events
     btn.onclick = shakeBall;
+    
+    // Start animation loop
     animate();
 
+    // Cleanup
     window.addEventListener('beforeunload', () => {
       if (tg.Accelerometer) tg.Accelerometer.stop();
       if (tg.DeviceOrientation) tg.DeviceOrientation.stop();
