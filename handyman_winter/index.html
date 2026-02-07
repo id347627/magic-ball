@@ -603,6 +603,11 @@
         const my = e.clientY - canvas.height / 1.8;
         let targetX = (my / (CONFIG.tileH/2) + mx / (CONFIG.tileW/2)) / 2;
         let targetY = (my / (CONFIG.tileH/2) - mx / (CONFIG.tileW/2)) / 2;
+
+        // Prevent worker from going over the main wall (X <= 1)
+        if (targetX < 1.1) {
+            targetX = 1.1;
+        }
         
         state.player.tx = targetX;
         state.player.ty = targetY;
