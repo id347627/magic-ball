@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+f<!DOCTYPE html>
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
@@ -336,7 +336,7 @@
         const workInterval = setInterval(() => {
             let progress = Math.min((Date.now() - start) / duration, 1);
             bar.style.width = (progress * 100) + '%';
-            text.innerText = `Ремонт: ${(progress * 2).toFixed(1)} люд/год`;
+            text.innerText = `Ремонт: ${(progress * 100).toFixed(1)} %`;
             
             const pPos = toScreen(player.x, player.y);
             particles.push({x: pPos.x+10, y: pPos.y-5, vx: Math.random()-0.5, vy: -Math.random(), a: 1});
