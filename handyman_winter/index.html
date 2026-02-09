@@ -387,6 +387,29 @@
         ctx.fillStyle = "#c0392b";
         ctx.beginPath(); ctx.arc(0, headY - 1, 5.5, Math.PI, 0); ctx.fill();
         ctx.beginPath(); ctx.arc(0, headY - 7, 2.5, 0, Math.PI * 2); ctx.fill();
+		
+		// Thought Bubble (Confusion)
+        ctx.save();
+        ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+        
+        // Trail dots
+        ctx.beginPath(); ctx.arc(6, headY - 8, 1.5, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(10, headY - 12, 2.5, 0, Math.PI * 2); ctx.fill();
+        
+        // Main bubble shape
+        const bubbleX = 25;
+        const bubbleY = headY - 22;
+        ctx.beginPath(); 
+        ctx.ellipse(bubbleX, bubbleY, 30, 10, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Text symbols inside
+        ctx.fillStyle = "#c0392b";
+        ctx.font = "bold 9px Arial";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("Я присідав!", bubbleX, bubbleY + 1); 
+        ctx.restore();
         
         ctx.restore();
     }
@@ -514,8 +537,8 @@
             bx = pos.x - 28; by = pos.y - 20;
         }
         ctx.strokeStyle = "#576574"; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(bx + 6, by, 8, Math.PI, 0); ctx.stroke();
-        ctx.fillStyle = "#95a5a6"; ctx.beginPath(); ctx.moveTo(bx, by); ctx.lineTo(bx + 12, by); ctx.lineTo(bx + 10, by + 14); ctx.lineTo(bx + 2, by + 14); ctx.closePath(); ctx.fill();
-        ctx.fillStyle = "#7f8c8d"; ctx.beginPath(); ctx.ellipse(bx + 6, by, 6, 2, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#95a5a6"; ctx.beginPath(); ctx.moveTo(bx, by); ctx.lineTo(bx + 12, by); ctx.lineTo(bx + 10, by + 14); ctx.lineTo(bx + 2, by + 14); ctx.closePath(); ctx.fill(); ctx.lineWidth = 1; ctx.stroke();
+        ctx.fillStyle = "#7f8c8d"; ctx.beginPath(); ctx.ellipse(bx + 6, by, 6, 2, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
         ctx.fillStyle = "#ffffff"; ctx.beginPath(); ctx.ellipse(bx + 6, by - 1, 4, 1.5, 0, 0, Math.PI * 2); ctx.fill();
         
         // Head
