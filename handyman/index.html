@@ -333,11 +333,13 @@ f<!DOCTYPE html>
         
         let start = Date.now();
         const duration = 3000;
+
+		text.innerText = `Ремонтую ...`;
+		
         const workInterval = setInterval(() => {
             let progress = Math.min((Date.now() - start) / duration, 1);
             bar.style.width = (progress * 100) + '%';
-            text.innerText = `Ремонт: ${(progress * 100).toFixed(1)} %`;
-            
+
             const pPos = toScreen(player.x, player.y);
             particles.push({x: pPos.x+10, y: pPos.y-5, vx: Math.random()-0.5, vy: -Math.random(), a: 1});
 
@@ -345,7 +347,7 @@ f<!DOCTYPE html>
                 clearInterval(workInterval);
                 player.state = 'idle';
                 wrapper.style.display = 'none';
-                text.innerText = "Готово! ✅ (+ 2.0 люд/год)";
+                text.innerText = "Готово! ✅ (+ 2 люд/год)";
                 if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
             }
         }, 50);
