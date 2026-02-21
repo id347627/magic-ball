@@ -185,51 +185,52 @@
 <script>
     const SHEET_URL = "https://script.google.com/macros/s/AKfycbxr9OemBs-vGeQPGzK1VkPinTDKqCyn_iSRM0Yy5ISYxx3BsJUSdaPelikII6l-lKYeUQ/exec"; 
 
-    const tg = window.Telegram.WebApp;
+   const tg = window.Telegram.WebApp;
 tg.ready();
 tg.expand();
 
-let playerName = "Гравець 005";
+let playerName = "Гравець";
 
-    function updatePlayerName() {
-    // 1. Спроба взяти об'єкт безпосередньо
+function updatePlayerName() {
+    // Спосіб 1: Прямий об'єкт (найшвидший)
     let user = tg.initDataUnsafe?.user;
 
-    // 2. Якщо об'єкт порожній, спробуємо розпарсити сирий рядок initData
+    // Спосіб 2: Якщо Unsafe порожній, розбираємо сирий рядок initData
     if (!user && tg.initData) {
         try {
-            const urlParams = new URLSearchParams(tg.initData);
-            const userJson = urlParams.get('user');
-            if (userJson) {
-                user = JSON.parse(userJson);
+            const params = new URLSearchParams(tg.initData);
+            const userRaw = params.get('user');
+            if (userRaw) {
+                user = JSON.parse(userRaw);
             }
         } catch (e) {
-            console.error("Помилка парсингу initData:", e);
+            console.error("Помилка отримання імені:", e);
         }
     }
 
-    // 3. Формуємо ім'я
+    // Формуємо фінальне ім'я
     if (user) {
-        const firstName = user.first_name || "";
-        const lastName = user.last_name || "";
-        playerName = (firstName + " " + lastName).trim() || user.username || "Гравець";
+        // Беремо Ім'я + Прізвище, або Username, або хоча б ID
+        const fullName = [user.first_name, user.last_name].filter(Boolean).join(" ");
+        playerName = fullName || user.username || `Користувач ${user.id}`;
     }
 
-    // Оновлюємо текст на екрані
+    // Відображаємо на екрані
     const greetingEl = document.getElementById('greeting');
     if (greetingEl) {
         greetingEl.innerText = `Привіт, ${playerName}! Давай спробуємо увійти в ТОП-5`;
     }
 }
 
-// Викликаємо одразу
+// Викликаємо 3 рази для надійності (через особливості завантаження в Telegram)
 updatePlayerName();
+setTimeout(updatePlayerName, 200);
+setTimeout(updatePlayerName, 1000);
 
-// Важливо: Telegram іноді заповнює дані з затримкою в мілісекунди
-// тому викликаємо ще раз через 500мс для впевненості
-setTimeout(updatePlayerName, 500);
 
-    console.log("Full Init Data:", tg.initDataUnsafe);
+tg.showAlert("Дані користувача: " + JSON.stringify(tg.initDataUnsafe));
+    
+    console.log("Full tg.initDataUnsafe Data:", tg.initDataUnsafe);
 
     document.getElementById('today-date').innerText = new Date().toLocaleDateString('uk-UA');
 
