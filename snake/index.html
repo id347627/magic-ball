@@ -286,26 +286,30 @@ updatePlayerName();
 
     // --- LEADERBOARD LOGIC ---
     async function fetchLeaderboard(method = 'GET', body = null) {
-        if (!SHEET_URL || SHEET_URL.includes("TgWebApp")) return;
-        try {
-            const options = { method: method };
-            if (body) options.body = JSON.stringify(body);
-            
-            const res = await fetch(SHEET_URL, options);
-            const data = await res.json();
-            
-            const content = document.getElementById('lb-content');
-            content.innerHTML = data.map((row, i) => `
-                <div class="lb-row">
-                    <span>${i+1}. ${row[0]}</span>
-                    <b>${row[1]}</b>
-                </div>
-            `).join('');
-        } catch (e) {
-            console.error("Leaderboard error:", e);
-            document.getElementById('lb-content').innerText = "Помилка завантаження";
-        }
+    if (!SHEET_URL || SHEET_URL.includes("YOUR_APPS_SCRIPT")) return;
+    
+    try {
+        const options = { 
+            method: method,
+            // Google Apps Script requires this for POST from different domains
+            headers: { 'Content-Type': 'text/plain' } 
+        };
+        if (body) options.body = JSON.stringify(body);
+        
+        const res = await fetch(SHEET_URL, options);
+        const data = await res.json();
+        
+        const content = document.getElementById('lb-content');
+        content.innerHTML = data.map((row, i) => `
+            <div class="lb-row">
+                <span>${i+1}. ${row[0]}</span>
+                <b>${row[1]}</b>
+            </div>
+        `).join('');
+    } catch (e) {
+        console.error("Leaderboard error:", e);
     }
+}
 
     // Initial load of leaderboard
     fetchLeaderboard();
