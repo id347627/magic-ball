@@ -208,13 +208,29 @@
     const SHEET_URL = "https://script.google.com/macros/s/AKfycbxr9OemBs-vGeQPGzK1VkPinTDKqCyn_iSRM0Yy5ISYxx3BsJUSdaPelikII6l-lKYeUQ/exec"; 
 
     const tg = window.Telegram.WebApp;
-    tg.expand();
     tg.ready();
+    tg.expand();
 
     // Get User Data
-    const user = tg.initDataUnsafe?.user;
-    const playerName = user ? (user.first_name + (user.last_name ? " " + user.last_name : "")) : "Анонім";
-
+	// Improved name extraction
+    //const user = tg.initDataUnsafe?.user;
+    //const playerName = user ? (user.first_name + (user.last_name ? " " + user.last_name : "")) : "Анонім";
+	
+	let playerName = "Гравець";
+	if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+    const user = tg.initDataUnsafe.user;
+    // Try to get first name + last name, or just first name, or username
+    playerName = user.first_name;
+    if (user.last_name) playerName += " " + user.last_name;
+    
+    // If name is still empty/null for some reason, use username
+    if (!playerName && user.username) playerName = user.username;
+	} else {
+		// If we are testing outside of Telegram, we can use a prompt for testing
+		playerName = prompt("Enter name for testing:") || "Anonim";
+	}
+	
+	
     const now = new Date();
     document.getElementById('today-date').innerText = now.toLocaleDateString('uk-UA');
 
