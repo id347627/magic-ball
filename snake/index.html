@@ -225,12 +225,6 @@ function updatePlayerName() {
 // Викликаємо 3 рази для надійності (через особливості завантаження в Telegram)
 updatePlayerName();
 setTimeout(updatePlayerName, 200);
-setTimeout(updatePlayerName, 1000);
-
-
-tg.showAlert("Дані користувача: " + JSON.stringify(tg.initDataUnsafe));
-    
-    console.log("Full tg.initDataUnsafe Data:", tg.initDataUnsafe);
 
     document.getElementById('today-date').innerText = new Date().toLocaleDateString('uk-UA');
 
