@@ -186,27 +186,48 @@
     const SHEET_URL = "https://script.google.com/macros/s/AKfycbxr9OemBs-vGeQPGzK1VkPinTDKqCyn_iSRM0Yy5ISYxx3BsJUSdaPelikII6l-lKYeUQ/exec"; 
 
     const tg = window.Telegram.WebApp;
-    tg.ready();
-    tg.expand();
+tg.ready();
+tg.expand();
 
-    let playerName = "Гравець";
+let playerName = "Гравець 005";
+
     function updatePlayerName() {
-        const user = tg.initDataUnsafe?.user;
-        if (user) {
-            playerName = user.first_name || "Гравець";
-            if (user.last_name) playerName += " " + user.last_name;
-        } else {
+    // 1. Спроба взяти об'єкт безпосередньо
+    let user = tg.initDataUnsafe?.user;
+
+    // 2. Якщо об'єкт порожній, спробуємо розпарсити сирий рядок initData
+    if (!user && tg.initData) {
+        try {
             const urlParams = new URLSearchParams(tg.initData);
-            const userParam = urlParams.get('user');
-            if (userParam) {
-                try {
-                    playerName = JSON.parse(userParam).first_name;
-                } catch(e) {}
+            const userJson = urlParams.get('user');
+            if (userJson) {
+                user = JSON.parse(userJson);
             }
+        } catch (e) {
+            console.error("Помилка парсингу initData:", e);
         }
-        document.getElementById('greeting').innerText = `Привіт, ${playerName}! Давай спробуємо увійти в ТОП-5`;
     }
-    updatePlayerName();
+
+    // 3. Формуємо ім'я
+    if (user) {
+        const firstName = user.first_name || "";
+        const lastName = user.last_name || "";
+        playerName = (firstName + " " + lastName).trim() || user.username || "Гравець";
+    }
+
+    // Оновлюємо текст на екрані
+    const greetingEl = document.getElementById('greeting');
+    if (greetingEl) {
+        greetingEl.innerText = `Привіт, ${playerName}! Давай спробуємо увійти в ТОП-5`;
+    }
+}
+
+// Викликаємо одразу
+updatePlayerName();
+
+// Важливо: Telegram іноді заповнює дані з затримкою в мілісекунди
+// тому викликаємо ще раз через 500мс для впевненості
+setTimeout(updatePlayerName, 500);
 
     document.getElementById('today-date').innerText = new Date().toLocaleDateString('uk-UA');
 
