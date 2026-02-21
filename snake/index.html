@@ -229,6 +229,8 @@ updatePlayerName();
 // тому викликаємо ще раз через 500мс для впевненості
 setTimeout(updatePlayerName, 500);
 
+    console.log("Full Init Data:", tg.initDataUnsafe);
+
     document.getElementById('today-date').innerText = new Date().toLocaleDateString('uk-UA');
 
     const canvas = document.getElementById("gameCanvas");
