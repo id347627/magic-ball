@@ -76,16 +76,21 @@
 .btn::before {
     content: '';
     display: block;
-    width: 0;
-    height: 0;
-    border-style: solid;
+    width: 24px; /* Чіткий розмір замість border-width */
+    height: 24px;
+    background-color: #ccc;
+    /* Створюємо ідеальний трикутник */
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    /* Додаємо глибину через фільтр */
     filter: drop-shadow(0 2px 1px rgba(0,0,0,0.4));
+    transition: background-color 0.1s;
 }
 
-.up::before    { border-width: 0 12px 18px 12px; border-color: transparent transparent #ccc transparent; }
-.down::before  { border-width: 18px 12px 0 12px; border-color: #ccc transparent transparent transparent; }
-.left::before  { border-width: 12px 18px 12px 0; border-color: transparent #ccc transparent transparent; }
-.right::before { border-width: 12px 0 12px 18px; border-color: transparent transparent transparent #ccc; }
+/* Повертаємо трикутник у потрібний бік */
+.up::before    { transform: rotate(0deg); }
+.down::before  { transform: rotate(180deg); }
+.left::before  { transform: rotate(-90deg); }
+.right::before { transform: rotate(90deg); }
 
 .btn:active, .btn.pressed { 
     transform: translateY(3px); 
