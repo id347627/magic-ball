@@ -190,9 +190,11 @@
     tg.expand();
 
     let playerName = "Гравець";
+    let userId = "0";
     function updatePlayerName() {
         const user = tg.initDataUnsafe?.user;
         if (user) {
+            userId = String(user.id);
             playerName = user.first_name || "Гравець";
             if (user.last_name) playerName += " " + user.last_name;
         } else {
@@ -204,7 +206,7 @@
                 } catch(e) {}
             }
         }
-        document.getElementById('greeting').innerText = `Привіт, ${playerName}!\nCпробуй увійти в ТОП-5`;
+        document.getElementById('greeting').innerText = `Привіт, ${playerName}!\nCпробуй увійти в сусідський ТОП-5`;
     }
     updatePlayerName();
 
@@ -298,7 +300,7 @@
         tg.HapticFeedback.notificationOccurred('warning');
         document.getElementById('final-score').innerText = score;
         document.getElementById('overlay').style.display = 'flex';
-        fetchLeaderboard('POST', { name: playerName, score: score });
+        fetchLeaderboard('POST', { userId: userId, name: playerName, score: score });
     }
 
     function reset() {
