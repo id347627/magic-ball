@@ -17,130 +17,38 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
-            margin: 0;
-            padding: 7px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            height: 100vh;
-            overflow: hidden;
+            margin: 0; padding: 7px; display: flex; flex-direction: column;
+            align-items: center; background-color: var(--bg-color); color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            height: 100vh; overflow: hidden;
         }
 
-        #header {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-            margin-top: 10px;
-            max-width: 600px;
-        }
-
+        #header { width: 100%; display: flex; justify-content: space-between; align-items: center; margin: 10px 0; max-width: 600px; }
         .header-left { display: flex; flex-direction: column; gap: 2px; }
         .title { font-weight: 800; font-size: 1.1rem; color: var(--text-main); line-height: 1.2; }
-        .date-label {
-            background-color: var(--label-bg);
-            color: #000;
-            font-weight: bold;
-            padding: 2px 8px;
-            font-size: 0.9rem;
-            display: inline-block;
-            border-radius: 4px;
-        }
-
+        .date-label { background-color: var(--label-bg); color: #000; font-weight: bold; padding: 2px 8px; font-size: 0.9rem; display: inline-block; border-radius: 4px; }
         .header-logo { height: 2.4rem; width: auto; object-fit: contain; }
 
-        #game-wrapper {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            background: #fff;
-            padding: 5px;
-            border-radius: 5px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-
-        #col-headers { display: flex; margin-left: 45px; padding-bottom: 5px;}
-        .col-label {
-            font-size: 10px; text-align: center; writing-mode: vertical-rl;
-            transform: rotate(180deg); color: #666; display: flex;
-            align-items: center; justify-content: center; font-family: monospace;
-        }
-
+        #game-wrapper { position: relative; display: flex; flex-direction: column; background: #fff; padding: 5px; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        #col-headers { display: flex; margin-left: 45px; padding-bottom: 5px; }
+        .col-label { font-size: 10px; text-align: center; writing-mode: vertical-rl; transform: rotate(180deg); color: #666; display: flex; align-items: center; justify-content: center; font-family: monospace; }
         #main-area { display: flex; flex-direction: row; }
         #row-headers { display: flex; flex-direction: column; width: 45px; justify-content: space-around; padding-right: 4px; }
-        .row-label {
-            background-color: var(--label-bg); color: #000; font-size: 10px;
-            font-weight: bold; border-radius: 6px; display: flex;
-            align-items: center; justify-content: center; height: 18px; font-family: monospace;
-        }
-
+        .row-label { background-color: var(--label-bg); color: #000; font-size: 10px; font-weight: bold; border-radius: 6px; display: flex; align-items: center; justify-content: center; height: 18px; font-family: monospace; }
         canvas { display: block; border: 1px solid #ccc; background-color: var(--cell-bg); }
 
-        /* Permanent Leaderboard Section */
-        #ui-middle-section {
-            width: 100%;
-            max-width: 300px;
-            margin: 10px 0;
-            text-align: center;
-        }
-
+        #ui-middle-section { width: 100%; max-width: 300px; margin: 10px 0; text-align: center; }
         #greeting { font-size: 0.9rem; font-weight: bold; margin-bottom: 8px; color: var(--text-main); }
-
-        .lb-container {
-            background: rgba(255, 255, 255, 0.5);
-            padding: 10px;
-            border-radius: 10px;
-            border: 1px solid rgba(0,0,0,0.1);
-        }
-
+        .lb-container { background: rgba(255, 255, 255, 0.5); padding: 10px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.1); }
         .lb-title { font-weight: 800; font-size: 0.75rem; color: #666; border-bottom: 1px solid #ccc; margin-bottom: 5px; padding-bottom: 3px; }
+        .lb-row { display: flex; justify-content: space-between; font-size: 0.85rem; padding: 2px 0; color: var(--text-main); }
 
-        .lb-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.85rem;
-            padding: 2px 0;
-            color: var(--text-main);
-        }
-
-        /* Game Over Overlay */
-        #overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            border-radius: 5px;
-            z-index: 10;
-            color: white;
-        }
+        #overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; flex-direction: column; align-items: center; justify-content: center; border-radius: 5px; z-index: 10; color: white; }
         #overlay h2 { margin: 0; font-size: 1.5rem; color: var(--label-bg); }
-        #overlay button {
-            background: var(--label-bg); border: none; padding: 10px 25px;
-            font-weight: bold; border-radius: 8px; font-size: 1rem; color: #000; margin-top: 15px;
-        }
+        #overlay button { background: var(--label-bg); border: none; padding: 10px 25px; font-weight: bold; border-radius: 8px; font-size: 1rem; color: #000; margin-top: 15px; cursor: pointer; }
 
-        #controls {
-            margin-top: auto;
-            margin-bottom: 10px;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            width: 100%;
-            max-width: 250px;
-        }
-
-        .btn {
-            aspect-ratio: 1/1; background: #e0e0e0; border-radius: 15px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 24px; box-shadow: 0 4px #bbb; color: #333;
-        }
+        #controls { margin-top: auto; margin-bottom: 10px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: 100%; max-width: 250px; }
+        .btn { aspect-ratio: 1/1; background: #e0e0e0; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 4px #bbb; color: #333; user-select: none; }
         .btn:active { transform: translateY(2px); box-shadow: 0 2px #999; }
     </style>
 </head>
@@ -151,14 +59,14 @@
         <div class="title">Графік погодинних відключень</div>
         <div class="date-container"><span class="date-label" id="today-date">--.--.----</span></div>
     </div>
-    <img src="header-logo.svg" class="header-logo" alt="logo">
+    <img src="header-logo.svg" class="header-logo" alt="logo" onerror="this.style.display='none'">
 </div>
 
 <div id="game-wrapper">
     <div id="overlay">
         <h2>Гра закінчена</h2>
         <p>Ваш рахунок: <span id="final-score">0</span></p>
-        <button onclick="reset()">Знову</button>
+        <button onclick="resetGame()">Знову</button>
     </div>
     <div id="col-headers"></div>
     <div id="main-area">
@@ -191,6 +99,7 @@
 
     let playerName = "Гравець";
     let userId = "0";
+
     function updatePlayerName() {
         const user = tg.initDataUnsafe?.user;
         if (user) {
@@ -201,9 +110,7 @@
             const urlParams = new URLSearchParams(tg.initData);
             const userParam = urlParams.get('user');
             if (userParam) {
-                try {
-                    playerName = JSON.parse(userParam).first_name;
-                } catch(e) {}
+                try { playerName = JSON.parse(userParam).first_name; } catch(e) {}
             }
         }
         document.getElementById('greeting').innerText = `Привіт, ${playerName}!\nCпробуй увійти в сусідський ТОП-5`;
@@ -217,7 +124,7 @@
     const ROWS = 12, COLS = 24;
     
     const availableWidth = window.innerWidth - 80;
-    const availableHeight = window.innerHeight - 380; // Adjusted for middle UI
+    const availableHeight = window.innerHeight - 380; 
     const CELL_SIZE = Math.min(Math.floor(availableWidth / COLS), Math.floor(availableHeight / ROWS), 25);
     const SVG_SIZE = Math.floor(CELL_SIZE * 0.65);
 
@@ -226,7 +133,7 @@
     const iconOff = new Image(); iconOff.src = 'elec-off.svg';
     const iconOn = new Image(); iconOn.src = 'elec-on.svg';
 
-    // UI Grid Labels
+    // UI Grid Labels setup
     const colHeaderDiv = document.getElementById('col-headers');
     for(let i=0; i<24; i++) {
         const d = document.createElement('div'); d.className = 'col-label';
@@ -234,6 +141,7 @@
         d.innerText = `${i.toString().padStart(2, '0')}-${(i+1).toString().padStart(2, '0')}`;
         colHeaderDiv.appendChild(d);
     }
+    
     const rowHeaderDiv = document.getElementById('row-headers');
     for(let i=1; i<=6; i++) {
         [".1", ".2"].forEach(sub => {
@@ -243,79 +151,148 @@
         });
     }
 
-    let snake = [{x: 5, y: 5}, {x: 4, y: 5}], food = {x: 12, y: 6};
-    let dx = 1, dy = 0, nextDir = 'RIGHT', score = 0, isGameOver = false;
+    // Game State
+    let snake = [{x: 5, y: 5}, {x: 4, y: 5}];
+    let food = {x: 12, y: 6};
+    let dx = 1, dy = 0, nextDir = 'RIGHT';
+    let score = 0;
+    let isGameOver = false;
 
-    async function fetchLeaderboard(method = 'GET', body = null) {
-        try {
-            const options = { method: method, headers: { 'Content-Type': 'text/plain' } };
-            if (body) options.body = JSON.stringify(body);
-            const res = await fetch(SHEET_URL, options);
-            const data = await res.json();
-            document.getElementById('lb-content').innerHTML = data.map((row, i) => `
-                <div class="lb-row">
-                    <span>${i+1}. ${row[0]}</span>
-                    <b>${row[1]}</b>
-                </div>
-            `).join('');
-        } catch (e) { console.error(e); }
+    // Rendering Leaderboard
+    function renderLeaderboard(data) {
+        if (!data || data.length === 0) {
+            document.getElementById('lb-content').innerHTML = "Поки немає рекордів";
+            return;
+        }
+        document.getElementById('lb-content').innerHTML = data.map((row, i) => `
+            <div class="lb-row">
+                <span>${i+1}. ${row[0]}</span>
+                <b>${row[1]}</b>
+            </div>
+        `).join('');
     }
 
+    async function fetchLeaderboard() {
+        try {
+            const res = await fetch(SHEET_URL);
+            const data = await res.json();
+            renderLeaderboard(data);
+        } catch (e) { 
+            console.error(e); 
+            document.getElementById('lb-content').innerHTML = "Помилка завантаження";
+        }
+    }
+
+    async function submitScoreAndFetch() {
+        document.getElementById('lb-content').innerHTML = "Оновлення...";
+        try {
+            const res = await fetch(SHEET_URL, {
+                method: 'POST',
+                body: JSON.stringify({ userId: userId, name: playerName, score: score }),
+                headers: { 'Content-Type': 'text/plain' }
+            });
+            const data = await res.json();
+            renderLeaderboard(data);
+        } catch (e) { console.error("Score submission failed", e); }
+    }
+
+    // Fetch initial leaderboard on load
     fetchLeaderboard();
 
     function draw() {
-        ctx.fillStyle = "#d3d4d5"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#d3d4d5"; 
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
         const iconOffset = (CELL_SIZE - SVG_SIZE) / 2;
+        
+        ctx.strokeStyle = "rgba(255,255,255,0.4)";
         for (let x = 0; x < COLS; x++) {
             for (let y = 0; y < ROWS; y++) {
-                ctx.strokeStyle = "rgba(255,255,255,0.4)"; ctx.strokeRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-                if (iconOff.complete && (x !== food.x || y !== food.y)) ctx.drawImage(iconOff, x * CELL_SIZE + iconOffset, y * CELL_SIZE + iconOffset, SVG_SIZE, SVG_SIZE);
+                ctx.strokeRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                if (iconOff.complete && (x !== food.x || y !== food.y)) {
+                    ctx.drawImage(iconOff, x * CELL_SIZE + iconOffset, y * CELL_SIZE + iconOffset, SVG_SIZE, SVG_SIZE);
+                }
             }
         }
-        ctx.font = `${CELL_SIZE * 0.8}px serif`; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        
+        ctx.font = `${CELL_SIZE * 0.8}px serif`; 
+        ctx.textAlign = "center"; ctx.textBaseline = "middle";
         ctx.fillText("💡", food.x * CELL_SIZE + CELL_SIZE/2, food.y * CELL_SIZE + CELL_SIZE/2 + 2);
+        
         snake.forEach(p => {
-            ctx.fillStyle = "#ffffff"; ctx.fillRect(p.x * CELL_SIZE, p.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-            if (iconOn.complete) ctx.drawImage(iconOn, p.x * CELL_SIZE + iconOffset, p.y * CELL_SIZE + iconOffset, SVG_SIZE, SVG_SIZE);
+            ctx.fillStyle = "#ffffff"; 
+            ctx.fillRect(p.x * CELL_SIZE, p.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+            if (iconOn.complete) {
+                ctx.drawImage(iconOn, p.x * CELL_SIZE + iconOffset, p.y * CELL_SIZE + iconOffset, SVG_SIZE, SVG_SIZE);
+            }
         });
     }
 
     function update() {
-        if (isGameOver) return;
         if (nextDir === 'LEFT' && dx === 0) { dx = -1; dy = 0; }
         if (nextDir === 'RIGHT' && dx === 0) { dx = 1; dy = 0; }
         if (nextDir === 'UP' && dy === 0) { dx = 0; dy = -1; }
         if (nextDir === 'DOWN' && dy === 0) { dx = 0; dy = 1; }
+        
         const head = {x: (snake[0].x + dx + COLS) % COLS, y: (snake[0].y + dy + ROWS) % ROWS};
-        if (snake.some(p => p.x === head.x && p.y === head.y)) { gameOver(); return; }
+        
+        if (snake.some(p => p.x === head.x && p.y === head.y)) { 
+            handleGameOver(); 
+            return; 
+        }
+        
         snake.unshift(head);
+        
         if (head.x === food.x && head.y === food.y) {
-            score++; tg.HapticFeedback.impactOccurred('medium');
+            score++; 
+            try { tg.HapticFeedback.impactOccurred('medium'); } catch(e){}
             food = { x: Math.floor(Math.random()*COLS), y: Math.floor(Math.random()*ROWS) };
-        } else snake.pop();
+        } else {
+            snake.pop();
+        }
     }
 
-    function gameOver() {
+    function handleGameOver() {
         isGameOver = true;
-        tg.HapticFeedback.notificationOccurred('warning');
+        try { tg.HapticFeedback.notificationOccurred('warning'); } catch(e){}
         document.getElementById('final-score').innerText = score;
         document.getElementById('overlay').style.display = 'flex';
-        fetchLeaderboard('POST', { userId: userId, name: playerName, score: score });
+        submitScoreAndFetch();
     }
 
-    function reset() {
-        snake = [{x: 5, y: 5}, {x: 4, y: 5}]; dx = 1; dy = 0; nextDir = 'RIGHT'; score = 0;
-        isGameOver = false; document.getElementById('overlay').style.display = 'none';
+    function resetGame() {
+        snake = [{x: 5, y: 5}, {x: 4, y: 5}]; 
+        dx = 1; dy = 0; nextDir = 'RIGHT'; score = 0;
+        document.getElementById('overlay').style.display = 'none';
         food = { x: Math.floor(Math.random()*COLS), y: Math.floor(Math.random()*ROWS) };
-        fetchLeaderboard();
+        isGameOver = false; 
+        requestAnimationFrame(gameLoop); // Restart loop
     }
 
     function changeDir(d) { if(!isGameOver) nextDir = d; }
+    
     window.addEventListener('keydown', e => {
         if(e.key.includes('Arrow')) changeDir(e.key.replace('Arrow', '').toUpperCase());
     });
 
-    setInterval(() => { update(); draw(); }, 200);
+    // Request Animation Frame Game Loop (Smoother and better for battery)
+    let lastRenderTime = 0;
+    const GAME_SPEED = 5; // Frames per second (equivalent to your old 200ms)
+
+    function gameLoop(currentTime) {
+        if (isGameOver) return; // Stop loop if dead
+        window.requestAnimationFrame(gameLoop);
+        
+        const secondsSinceLastRender = (currentTime - lastRenderTime) / 1000;
+        if (secondsSinceLastRender < 1 / GAME_SPEED) return;
+        
+        lastRenderTime = currentTime;
+        update();
+        draw();
+    }
+
+    // Start the game loop
+    window.requestAnimationFrame(gameLoop);
+
 </script>
 </body>
 </html>
