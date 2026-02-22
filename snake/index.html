@@ -204,7 +204,7 @@
                 } catch(e) {}
             }
         }
-        document.getElementById('greeting').innerText = `Привіт, ${playerName}! Давай спробуємо увійти в ТОП-5`;
+        document.getElementById('greeting').innerText = `Привіт, ${playerName}!\nCпробуй увійти в ТОП-5`;
     }
     updatePlayerName();
 
@@ -305,6 +305,7 @@
         snake = [{x: 5, y: 5}, {x: 4, y: 5}]; dx = 1; dy = 0; nextDir = 'RIGHT'; score = 0;
         isGameOver = false; document.getElementById('overlay').style.display = 'none';
         food = { x: Math.floor(Math.random()*COLS), y: Math.floor(Math.random()*ROWS) };
+        fetchLeaderboard();
     }
 
     function changeDir(d) { if(!isGameOver) nextDir = d; }
