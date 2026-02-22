@@ -1,327 +1,297 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Magic 8 Ball</title>
-  <script src="https://telegram.org/js/telegram-web-app.js?v=8.0"></script>
-  <style>
-    /* Reset & Base Styles */
-    * { box-sizing: border-box; }
-    
-    body { 
-      background: #1a1a1a; 
-      display: flex; 
-      flex-direction: column; 
-      align-items: center; 
-      justify-content: center; 
-      height: 100vh; 
-      margin: 0; 
-      color: white; 
-      font-family: sans-serif; 
-      overflow: hidden;
-      touch-action: none;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Power Outage Snake</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --tg-bg: #ffffff;
+            --cell-bg: #d3d4d5;
+            --label-bg: #ffbb42;
+            --text-main: var(--tg-theme-text-color, #000000);
+            --bg-color: var(--tg-theme-bg-color, #f0f2f5);
+        }
 
-    /* Main Ball Container */
-    #ball { 
-      width: 300px; 
-      height: 300px; 
-      background: radial-gradient(circle at 30% 30%, #444, #000); 
-      border-radius: 50%; 
-      display: flex; 
-      align-items: center; 
-      justify-content: center; 
-      position: relative; 
-      box-shadow: 0 20px 50px rgba(0,0,0,0.9);
-      transition: transform 0.1s ease-out;
-      will-change: transform, filter;
-      overflow: hidden;
-    }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-    /* Grain/Noise Overlay */
-    #ball::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.60' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-      opacity: 0.08;
-      pointer-events: none;
-      mix-blend-mode: overlay;
-      z-index: 1;
-    }
+        body {
+            margin: 0; padding: 7px; display: flex; flex-direction: column;
+            align-items: center; background-color: var(--bg-color); color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            height: 100vh; overflow: hidden;
+        }
 
-    /* Ball Window (The Portal) */
-    #window { 
-      width: 170px; 
-      height: 170px; 
-      background: #020202; 
-      border-radius: 50%; 
-      border: 12px solid #222; 
-      display: flex; 
-      align-items: center; 
-      justify-content: center; 
-      position: relative;
-      overflow: hidden; 
-      box-shadow: inset 0 0 35px rgba(0,0,0,1);
-      z-index: 2;
-    }
+        #header { width: 100%; display: flex; justify-content: space-between; align-items: center; margin: 10px 0; max-width: 600px; }
+        .header-left { display: flex; flex-direction: column; gap: 2px; }
+        .title { font-weight: 800; font-size: 1.1rem; color: var(--text-main); line-height: 1.2; }
+        .date-label { background-color: var(--label-bg); color: #000; font-weight: bold; padding: 2px 8px; font-size: 0.9rem; display: inline-block; border-radius: 4px; }
+        .header-logo { height: 2.4rem; width: auto; object-fit: contain; }
 
-    #triangle-container {
-      position: absolute;
-      width: 180px; 
-      height: 180px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: opacity 1.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.3s ease-out;
-      will-change: transform, opacity;
-    }
+        #game-wrapper { position: relative; display: flex; flex-direction: column; background: #fff; padding: 5px; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        
+        #live-score { align-self: flex-end; margin-right: 5px; margin-bottom: 10px; display: flex; justify-content: center; align-items: center; text-align: center; min-width: 80px; height: 24px; background: var(--cell-bg);color: #000; padding: 2px 20px; border-radius: 20px;font-weight: 900;font-size: 0.8rem;z-index: 5;box-shadow: 0 2px 5px rgba(0,0,0,0.1);}
 
-    #triangle {
-      width: 175px;
-      height: 165px;
-      background: radial-gradient(circle at 50% 60%, #1e3d2b 0%, #142b1e 50%, #0a140e 100%);
-      clip-path: path('M87.5 5 C110 50 175 130 175 145 C175 160 140 160 87.5 160 C35 160 0 160 0 145 C0 130 65 50 87.5 5 Z');
-      position: relative;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      box-shadow: inset 0 -10px 20px rgba(0,0,0,0.5);
-      filter: drop-shadow(0 0 12px rgba(0,0,0,0.8));
-      overflow: hidden;
-    }
+        #col-headers { display: flex; margin-left: 25px; margin-bottom: 5px; }
+        .col-label { font-size: 8px; text-align: center; writing-mode: vertical-rl; transform: rotate(180deg); color: #666; display: flex; align-items: center; justify-content: center; font-family: monospace; }
+        #main-area { display: flex; flex-direction: row; }
+        #row-headers { display: flex; flex-direction: column; width: 25px; justify-content: space-around; padding-right: 4px; }
+        .row-label { background-color: var(--label-bg); color: #000; font-size: 8px; font-weight: bold; border-radius: 6px; display: flex; align-items: center; justify-content: center; height: 18px; font-family: monospace; }
+        canvas { display: block; border: 1px solid #ccc; background-color: var(--cell-bg); }
 
-    #triangle::before {
-      content: '';
-      position: absolute;
-      top: -50%; left: -50%; width: 200%; height: 200%;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-      opacity: 0.12;
-      pointer-events: none;
-      mix-blend-mode: overlay;
-    }
+        #ui-middle-section { width: 100%; max-width: 300px; margin: 10px 0; text-align: center; }
+        #greeting { font-size: 0.9rem; font-weight: bold; margin-bottom: 8px; color: var(--text-main); }
+        .lb-container { background: rgba(255, 255, 255, 0.5); padding: 10px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.1); }
+        .lb-title { font-weight: 800; font-size: 0.75rem; color: #666; border-bottom: 1px solid #ccc; margin-bottom: 5px; padding-bottom: 3px; }
+        .lb-row { display: flex; justify-content: space-between; font-size: 0.85rem; padding: 2px 0; color: var(--text-main); }
 
-    #answer { 
-      position: absolute;
-      top: 70px;
-      color: #a8caff; 
-      font-weight: bold; 
-      font-size: 14px; 
-      text-align: center;
-      width: 100px;
-      line-height: 1.1;
-      text-transform: uppercase; 
-      text-shadow: 0 0 8px rgba(127, 176, 255, 0.8);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 60px;
-      transform: perspective(100px) rotateX(10deg);
-    }
+        #overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; flex-direction: column; align-items: center; justify-content: center; border-radius: 5px; z-index: 10; color: white; }
+        #overlay h2 { margin: 0; font-size: 1.5rem; color: var(--label-bg); }
+        #overlay button { background: var(--label-bg); border: none; padding: 10px 25px; font-weight: bold; border-radius: 8px; font-size: 1rem; color: #000; margin-top: 15px; cursor: pointer; }
 
-    #answer.initial {
-      font-size: 70px;
-      top: 60px; 
-      height: 80px;
-      width: 100%;
-      transform: none;
-    }
-
-    /* Animations */
-    .shake-anim { 
-      animation: realisticShake 0.4s infinite alternate; 
-      filter: blur(1px);
-    }
-
-    @keyframes realisticShake {
-      0% { transform: translate(0, 0) rotate(0deg); }
-      25% { transform: translate(8px, -4px) rotate(2deg); }
-      50% { transform: translate(-10px, 6px) rotate(-3deg); }
-      75% { transform: translate(6px, 10px) rotate(1.5deg); }
-      100% { transform: translate(-4px, -8px) rotate(-1deg); }
-    }
-
-    /* UI Elements */
-    #instruction {
-      margin-top: 40px;
-      font-size: 16px;
-      text-align: center;
-      padding: 0 20px;
-      color: #888;
-      max-width: 280px;
-      line-height: 1.4;
-    }
-
-    #desktop-btn {
-      margin-top: 30px;
-      padding: 15px 45px;
-      border-radius: 35px;
-      border: none;
-      background: linear-gradient(135deg, #1e3d2b, #0a140e);
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-      transition: transform 0.1s;
-    }
-
-    #desktop-btn:active {
-      transform: scale(0.95);
-    }
-  </style>
+        #controls { margin-top: auto; margin-bottom: 10px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: 100%; max-width: 250px; }
+        .btn { aspect-ratio: 1/1; background: radial-gradient(circle at 50% 60%, #1e3d2b 0%, #142b1e 100%); border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 4px #bbb; color: #333; user-select: none; color: #ffffff; 
+            }
+			.btn[onpointerdown*="UP"], 
+        .btn[onpointerdown*="DOWN"] {
+            font-size: 38px; /* Larger font for vertical arrows */
+            transform: scaleY(1.1); /* Slight vertical stretch to match width */
+        }
+        .btn:active { transform: translateY(2px); box-shadow: 0 2px #999; background: radial-gradient(circle at 50% 60%, #2a523a 0%, #1e3d2b 100%); /* Brightens slightly when pressed */}
+    </style>
 </head>
 <body>
 
-  <div id="ball">
-    <div id="window">
-      <div id="triangle-container">
-        <div id="triangle">
-          <div id="answer" class="initial">?</div>
-        </div>
-      </div>
+<div id="header">
+    <div class="header-left">
+        <div class="title">Графік погодинних відключень</div>
+        <div class="date-container"><span class="date-label" id="today-date">--.--.----</span></div>
     </div>
-  </div>
-
-  <div id="instruction"></div>
-  <button id="desktop-btn">ПОТРЯСТИ 🎱</button>
-
-  <script>
-    const tg = window.Telegram.WebApp;
+    <img src="header-logo.svg" class="header-logo" alt="logo" onerror="this.style.display='none'">
+</div>
+<div id="live-score">💡: 0</div>
+<div id="game-wrapper">
     
-    // Configuration
-    const ANSWERS = [
-      "Запитай пізніше", "Так, безперечно", "Не дуже добрі перспективи",
-      "Можеш на це покластися", "Моя відповідь — ні", "Це безсумнівно",
-      "Наразі неможливо передбачити", "Знаки вказують на «так»", "Дуже сумнівно",
-      "Як на мене — так", "Зосередься і запитай знову", "Так",
-      "Мої джерела кажуть «ні»", "Без жодних сумнівів", "Бачення нечітке",
-      "Не розраховуй на це", "Хороші перспективи", "Саме так",
-      "Краще не казати тобі зараз", "Найімовірніше"
-    ];
+    <div id="overlay">
+        <h2>Гра закінчена</h2>
+        <p>Ваш рахунок: <span id="final-score">0</span></p>
+        <button onclick="resetGame()">Знову</button>
+    </div>
+    <div id="col-headers"></div>
+    <div id="main-area">
+        <div id="row-headers"></div>
+        <canvas id="gameCanvas"></canvas>
+    </div>
+</div>
 
-    // State
-    let isShaking = false;
-    let resetTimer;
-    let targetX = 0, targetY = 0;
-    let currentX = 0, currentY = 0;
-    let currentTilt = 0;
+<div id="ui-middle-section">
+    <div id="greeting">Привіт! Давай спробуємо увійти в ТОП-5</div>
+    <div class="lb-container">
+        <div class="lb-title">ТОП 5 ГРАВЦІВ</div>
+        <div id="lb-content">Завантаження...</div>
+    </div>
+</div>
 
-    // Elements
-    const ball = document.getElementById('ball');
-    const container = document.getElementById('triangle-container');
-    const ansText = document.getElementById('answer');
-    const instruction = document.getElementById('instruction');
-    const btn = document.getElementById('desktop-btn');
+<div id="controls">
+    <div class="btn" style="grid-column:2" onpointerdown="changeDir('UP')">▲</div>
+    <div class="btn" style="grid-column:1" onpointerdown="changeDir('LEFT')">◀</div>
+    <div class="btn" style="grid-column:2" onpointerdown="changeDir('DOWN')">▼</div>
+    <div class="btn" style="grid-column:3" onpointerdown="changeDir('RIGHT')">▶</div>
+</div>
 
-    // Initialize WebApp
+<script>
+    const SHEET_URL = "https://script.google.com/macros/s/AKfycbxr9OemBs-vGeQPGzK1VkPinTDKqCyn_iSRM0Yy5ISYxx3BsJUSdaPelikII6l-lKYeUQ/exec"; 
+
+    const tg = window.Telegram.WebApp;
     tg.ready();
     tg.expand();
 
-    function initTelegramSensors() {
-      if (tg.Accelerometer) {
-        tg.Accelerometer.start({ refresh_rate: 20 }, (success) => {
-          if (success) {
-            instruction.innerText = "Зосередься на питанні та потряси телефон📱";
-            tg.onEvent('accelerometerChanged', () => {
-              const { x, y, z } = tg.Accelerometer;
-              const totalAcc = Math.sqrt(x*x + y*y + z*z);
-              if (totalAcc > 22 && !isShaking) shakeBall();
-            });
-          }
-        });
-      }
+    let playerName = "Гравець";
+    let userId = "0";
 
-      if (tg.DeviceOrientation) {
-        tg.DeviceOrientation.start({ refresh_rate: 40 }, (success) => {
-          if (success) {
-            tg.onEvent('deviceOrientationChanged', () => {
-              if (isShaking) return;
-              
-              const { gamma, beta } = tg.DeviceOrientation;
-              const orientation = window.orientation || 0;
-
-              let rawX, rawY;
-              if (orientation === 90) {
-                rawX = -(beta - 45); rawY = gamma;
-              } else if (orientation === -90) {
-                rawX = (beta - 45); rawY = -gamma;
-              } else {
-                rawX = gamma; rawY = (beta - 45);
-              }
-
-              targetX = Math.max(-25, Math.min(25, (rawX || 0)));
-              targetY = Math.max(-25, Math.min(25, (rawY || 0)));
-            });
-          }
-        });
-      }
+    function updatePlayerName() {
+        const user = tg.initDataUnsafe?.user;
+        if (user) {
+            userId = String(user.id);
+            playerName = user.first_name || "Гравець";
+            if (user.last_name) playerName += " " + user.last_name;
+        }
+        document.getElementById('greeting').innerText = `Привіт, ${playerName}!\nCпробуй увійти в сусідський ТОП-5`;
     }
+    updatePlayerName();
 
-    function shakeBall() {
-      if (isShaking) return;
-      isShaking = true;
-      
-      clearTimeout(resetTimer);
-      container.style.opacity = "0";
-      ball.classList.add('shake-anim');
-      
-      if (tg.HapticFeedback) {
-        tg.HapticFeedback.notificationOccurred('success');
-      }
+    document.getElementById('today-date').innerText = new Date().toLocaleDateString('uk-UA');
 
-      setTimeout(() => {
-        ball.classList.remove('shake-anim');
-        ansText.innerText = ANSWERS[Math.floor(Math.random() * ANSWERS.length)];
-        ansText.className = ""; 
-        currentTilt = (Math.random() * 10 - 5); 
-        container.style.opacity = "1";
-        isShaking = false;
-        resetTimer = setTimeout(resetBall, 10000);
-      }, 800);
-    }
-
-    function resetBall() {
-      container.style.opacity = "0";
-      setTimeout(() => {
-        ansText.innerText = "?";
-        ansText.className = "initial";
-        currentTilt = 0;
-        container.style.opacity = "1";
-      }, 600);
-    }
-
-    function animate() {
-      if (!isShaking) {
-        currentX += (targetX - currentX) * 0.15;
-        currentY += (targetY - currentY) * 0.15;
-        const drift = Math.sin(Date.now() / 800) * 3;
-        container.style.transform = `translate(${currentX}px, ${currentY + drift}px) rotate(${currentTilt}deg)`;
-      }
-      requestAnimationFrame(animate);
-    }
-
-    // Platform detection
-    const isMobile = ['android', 'ios'].includes(tg.platform);
-    if (isMobile && tg.version >= "8.0") {
-	  btn.style.display = 'none';
-      initTelegramSensors();
-    } else {
-	  btn.style.display = 'block';
-      instruction.innerText = "Натисніть кнопку, щоб отримати відповідь";
-    }
-
-    // Events
-    btn.onclick = shakeBall;
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    const ROWS = 12, COLS = 24;
     
-    // Start animation loop
-    animate();
+    const availableWidth = window.innerWidth - 40;
+    const availableHeight = window.innerHeight - 380; 
+    const CELL_SIZE = Math.min(Math.floor(availableWidth / COLS), Math.floor(availableHeight / ROWS), 25);
+    const SVG_SIZE = Math.floor(CELL_SIZE * 0.65);
 
-    // Cleanup
-    window.addEventListener('beforeunload', () => {
-      if (tg.Accelerometer) tg.Accelerometer.stop();
-      if (tg.DeviceOrientation) tg.DeviceOrientation.stop();
-    });
-  </script>
+    canvas.width = COLS * CELL_SIZE; canvas.height = ROWS * CELL_SIZE;
+
+    const iconOff = new Image(); iconOff.src = 'elec-off.svg';
+    const iconOn = new Image(); iconOn.src = 'elec-on.svg';
+
+    // UI Labels
+    const colHeaderDiv = document.getElementById('col-headers');
+    for(let i=0; i<COLS; i++) {
+        const d = document.createElement('div'); d.className = 'col-label';
+        d.style.width = CELL_SIZE + 'px';
+        d.innerText = `${i.toString().padStart(2, '0')}-${(i+1).toString().padStart(2, '0')}`;
+        colHeaderDiv.appendChild(d);
+    }
+    const rowHeaderDiv = document.getElementById('row-headers');
+    for(let i=1; i<=6; i++) {
+        [".1", ".2"].forEach(sub => {
+            const d = document.createElement('div'); d.className = 'row-label';
+            d.innerText = i + sub; d.style.height = (CELL_SIZE - 2) + 'px';
+            rowHeaderDiv.appendChild(d);
+        });
+    }
+
+    let snake = [{x: 5, y: 5}, {x: 4, y: 5}], food = {x: 12, y: 6};
+    let dx = 1, dy = 0, nextDir = 'RIGHT', score = 0, isGameOver = false;
+
+    function renderLeaderboard(data) {
+        if (!data || data.length === 0) {
+            document.getElementById('lb-content').innerHTML = "Поки немає рекордів";
+            return;
+        }
+        document.getElementById('lb-content').innerHTML = data.map((row, i) => `
+            <div class="lb-row">
+                <span>${i+1}. ${row[0]}</span>
+                <b>${row[1]}</b>
+            </div>
+        `).join('');
+    }
+
+    async function fetchLeaderboard() {
+        try {
+            const res = await fetch(SHEET_URL);
+            const data = await res.json();
+            renderLeaderboard(data);
+        } catch (e) { document.getElementById('lb-content').innerHTML = "Помилка завантаження"; }
+    }
+
+    async function submitScoreAndFetch() {
+        const lbBox = document.getElementById('lb-content');
+        lbBox.innerHTML = "Оновлення...";
+        try {
+            const res = await fetch(SHEET_URL, {
+                method: 'POST',
+                body: JSON.stringify({ userId: userId, name: playerName, score: score }),
+                headers: { 'Content-Type': 'text/plain' }
+            });
+            const text = await res.text(); // Read as text first to avoid JSON parse errors
+            const data = JSON.parse(text);
+            renderLeaderboard(data);
+        } catch (e) { 
+            console.error("Score submission failed", e);
+            lbBox.innerHTML = "Помилка. Оновлення...";
+            fetchLeaderboard(); // Fallback if POST fails
+        }
+    }
+
+    fetchLeaderboard();
+
+    function draw() {
+        ctx.fillStyle = "#d3d4d5"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        const iconOffset = (CELL_SIZE - SVG_SIZE) / 2;
+        ctx.strokeStyle = "rgba(255,255,255,0.4)";
+        for (let x = 0; x < COLS; x++) {
+            for (let y = 0; y < ROWS; y++) {
+                ctx.strokeRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                if (iconOff.complete && (x !== food.x || y !== food.y)) 
+                    ctx.drawImage(iconOff, x * CELL_SIZE + iconOffset, y * CELL_SIZE + iconOffset, SVG_SIZE, SVG_SIZE);
+            }
+        }
+        ctx.font = `${CELL_SIZE * 0.8}px serif`; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        ctx.fillText("💡", food.x * CELL_SIZE + CELL_SIZE/2, food.y * CELL_SIZE + CELL_SIZE/2 + 2);
+        snake.forEach(p => {
+            ctx.fillStyle = "#ffffff"; ctx.fillRect(p.x * CELL_SIZE, p.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+            if (iconOn.complete) ctx.drawImage(iconOn, p.x * CELL_SIZE + iconOffset, p.y * CELL_SIZE + iconOffset, SVG_SIZE, SVG_SIZE);
+        });
+    }
+
+    function update() {
+        if (nextDir === 'LEFT' && dx === 0) { dx = -1; dy = 0; }
+        if (nextDir === 'RIGHT' && dx === 0) { dx = 1; dy = 0; }
+        if (nextDir === 'UP' && dy === 0) { dx = 0; dy = -1; }
+        if (nextDir === 'DOWN' && dy === 0) { dx = 0; dy = 1; }
+        
+        const head = {x: (snake[0].x + dx + COLS) % COLS, y: (snake[0].y + dy + ROWS) % ROWS};
+        
+        if (snake.some(p => p.x === head.x && p.y === head.y)) { 
+            handleGameOver(); 
+            return; 
+        }
+        
+        snake.unshift(head);
+        
+        if (head.x === food.x && head.y === food.y) {
+            score++;
+            document.getElementById('live-score').innerText = `💡: ${score}`;
+            try { tg.HapticFeedback.impactOccurred('medium'); } catch(e){}
+            
+            // Logic to prevent food spawning on snake body
+            let newFood;
+            while (true) {
+                newFood = { 
+                    x: Math.floor(Math.random() * COLS), 
+                    y: Math.floor(Math.random() * ROWS) 
+                };
+                // Check if newFood coordinates overlap with any snake segment
+                const isOnSnake = snake.some(segment => segment.x === newFood.x && segment.y === newFood.y);
+                if (!isOnSnake) break; 
+            }
+            food = newFood;
+            
+        } else { 
+            snake.pop(); 
+        }
+    }
+
+    function handleGameOver() {
+        isGameOver = true;
+        try { tg.HapticFeedback.notificationOccurred('warning'); } catch(e){}
+        document.getElementById('final-score').innerText = score;
+        document.getElementById('overlay').style.display = 'flex';
+        submitScoreAndFetch();
+    }
+
+    function resetGame() {
+        snake = [{x: 5, y: 5}, {x: 4, y: 5}]; dx = 1; dy = 0; nextDir = 'RIGHT'; score = 0;
+        document.getElementById('live-score').innerText = `💡: 0`; // Reset live UI
+        document.getElementById('overlay').style.display = 'none';
+        let newFood;
+        while (true) {
+            newFood = { x: Math.floor(Math.random()*COLS), y: Math.floor(Math.random()*ROWS) };
+            if (!snake.some(s => s.x === newFood.x && s.y === newFood.y)) break;
+        }
+        food = newFood;
+        isGameOver = false;
+        requestAnimationFrame(gameLoop);
+    }
+
+    function changeDir(d) { if(!isGameOver) nextDir = d; }
+    window.addEventListener('keydown', e => { if(e.key.includes('Arrow')) changeDir(e.key.replace('Arrow', '').toUpperCase()); });
+
+    let lastRenderTime = 0;
+    const GAME_SPEED = 5; 
+    function gameLoop(currentTime) {
+        if (isGameOver) return;
+        window.requestAnimationFrame(gameLoop);
+        const secondsSinceLastRender = (currentTime - lastRenderTime) / 1000;
+        if (secondsSinceLastRender < 1 / GAME_SPEED) return;
+        lastRenderTime = currentTime;
+        update(); draw();
+    }
+    window.requestAnimationFrame(gameLoop);
+</script>
 </body>
 </html>
