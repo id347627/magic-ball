@@ -50,41 +50,53 @@
         #overlay h2 { margin: 0; font-size: 1.5rem; color: var(--label-bg); }
         #overlay button { background: var(--label-bg); border: none; padding: 10px 25px; font-weight: bold; border-radius: 8px; font-size: 1rem; color: #000; margin-top: 15px; cursor: pointer; }
 
-        #controls { margin-top: auto; margin-bottom: 10px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: 100%; max-width: 250px; }
-        .btn { aspect-ratio: 1/1; background: radial-gradient(circle at 50% 60%, #1e3d2b 0%, #142b1e 100%); border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 4px #bbb; color: #333; user-select: none;}
-        }
-        .btn:active { transform: translateY(2px); box-shadow: 0 2px #999; background: radial-gradient(circle at 50% 60%, #2a523a 0%, #1e3d2b 100%);}
-		.btn::before {
+#controls { 
+    margin-top: auto; 
+    margin-bottom: 10px; 
+    display: grid; 
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 12px; 
+    width: 100%; 
+    max-width: 250px; 
+}
+
+.btn { 
+    aspect-ratio: 1/1; 
+    background: radial-gradient(circle at 50% 60%, #1e3d2b 0%, #142b1e 100%); 
+    border-radius: 15px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    box-shadow: 0 4px #0a1610;
+    user-select: none;
+    transition: all 0.05s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.btn::before {
     content: '';
     display: block;
     width: 0;
     height: 0;
     border-style: solid;
+    filter: drop-shadow(0 2px 1px rgba(0,0,0,0.4));
 }
 
+.up::before    { border-width: 0 12px 18px 12px; border-color: transparent transparent #ccc transparent; }
+.down::before  { border-width: 18px 12px 0 12px; border-color: #ccc transparent transparent transparent; }
+.left::before  { border-width: 12px 18px 12px 0; border-color: transparent #ccc transparent transparent; }
+.right::before { border-width: 12px 0 12px 18px; border-color: transparent transparent transparent #ccc; }
 
-.up::before {
-    border-width: 0 10px 15px 10px;
-    border-color: transparent transparent #ccc transparent;
+.btn:active, .btn.pressed { 
+    transform: translateY(3px); 
+    box-shadow: 0 1px #050a07; 
+    background: radial-gradient(circle at 50% 60%, #2a523a 0%, #1e3d2b 100%);
 }
 
-.down::before {
-    border-width: 15px 10px 0 10px;
-    border-color: #ccc transparent transparent transparent;
+.btn:active::before {
+    filter: drop-shadow(0 1px 0px rgba(0,0,0,0.6));
+    border-bottom-color: #aaa;
 }
-
-.left::before {
-    border-width: 10px 15px 10px 0;
-    border-color: transparent #ccc transparent transparent;
-}
-
-.right::before {
-    border-width: 10px 0 10px 15px;
-    border-color: transparent transparent transparent #ccc;
-}
-		
-		
-		
     </style>
 </head>
 <body>
