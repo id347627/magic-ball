@@ -31,7 +31,7 @@
 
         #game-wrapper { position: relative; display: flex; flex-direction: column; background: #fff; padding: 5px; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         
-        #live-score { align-self: flex-end; margin-right: 5px; margin-bottom: 10px; display: flex; justify-content: center; align-items: center; text-align: center; min-width: 80px; height: 24px; background: var(--cell-bg);color: #000; padding: 2px 20px; border-radius: 20px;font-weight: 900;font-size: 0.8rem;z-index: 5;box-shadow: 0 2px 5px rgba(0,0,0,0.1);}
+        #live-score { align-self: flex-end; margin-bottom: 10px; display: flex; justify-content: center; align-items: center; text-align: center; min-width: 80px; height: 24px; background: var(--cell-bg);color: #000; padding: 2px 20px; border-radius: 20px;font-weight: 900;font-size: 0.8rem;z-index: 5;box-shadow: 0 2px 5px rgba(0,0,0,0.1); border: 1px solid #ccc;}
 
         #col-headers { display: flex; margin-left: 25px; margin-bottom: 5px; }
         .col-label { font-size: 8px; text-align: center; writing-mode: vertical-rl; transform: rotate(180deg); color: #666; display: flex; align-items: center; justify-content: center; font-family: monospace; }
@@ -51,14 +51,40 @@
         #overlay button { background: var(--label-bg); border: none; padding: 10px 25px; font-weight: bold; border-radius: 8px; font-size: 1rem; color: #000; margin-top: 15px; cursor: pointer; }
 
         #controls { margin-top: auto; margin-bottom: 10px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: 100%; max-width: 250px; }
-        .btn { aspect-ratio: 1/1; background: radial-gradient(circle at 50% 60%, #1e3d2b 0%, #142b1e 100%); border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 4px #bbb; color: #333; user-select: none; color: #ffffff; 
-            }
-			.btn[onpointerdown*="UP"], 
-        .btn[onpointerdown*="DOWN"] {
-            font-size: 38px; /* Larger font for vertical arrows */
-            transform: scaleY(1.1); /* Slight vertical stretch to match width */
+        .btn { aspect-ratio: 1/1; background: radial-gradient(circle at 50% 60%, #1e3d2b 0%, #142b1e 100%); border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 4px #bbb; color: #333; user-select: none;}
         }
-        .btn:active { transform: translateY(2px); box-shadow: 0 2px #999; background: radial-gradient(circle at 50% 60%, #2a523a 0%, #1e3d2b 100%); /* Brightens slightly when pressed */}
+        .btn:active { transform: translateY(2px); box-shadow: 0 2px #999; background: radial-gradient(circle at 50% 60%, #2a523a 0%, #1e3d2b 100%);}
+		.btn::before {
+    content: '';
+    display: block;
+    width: 0;
+    height: 0;
+    border-style: solid;
+}
+
+
+.up::before {
+    border-width: 0 10px 15px 10px;
+    border-color: transparent transparent #ccc transparent;
+}
+
+.down::before {
+    border-width: 15px 10px 0 10px;
+    border-color: #ccc transparent transparent transparent;
+}
+
+.left::before {
+    border-width: 10px 15px 10px 0;
+    border-color: transparent #ccc transparent transparent;
+}
+
+.right::before {
+    border-width: 10px 0 10px 15px;
+    border-color: transparent transparent transparent #ccc;
+}
+		
+		
+		
     </style>
 </head>
 <body>
@@ -70,9 +96,8 @@
     </div>
     <img src="header-logo.svg" class="header-logo" alt="logo" onerror="this.style.display='none'">
 </div>
-<div id="live-score">💡: 0</div>
 <div id="game-wrapper">
-    
+	<div id="live-score">💡: 0</div>    
     <div id="overlay">
         <h2>Гра закінчена</h2>
         <p>Ваш рахунок: <span id="final-score">0</span></p>
@@ -94,10 +119,10 @@
 </div>
 
 <div id="controls">
-    <div class="btn" style="grid-column:2" onpointerdown="changeDir('UP')">▲</div>
-    <div class="btn" style="grid-column:1" onpointerdown="changeDir('LEFT')">◀</div>
-    <div class="btn" style="grid-column:2" onpointerdown="changeDir('DOWN')">▼</div>
-    <div class="btn" style="grid-column:3" onpointerdown="changeDir('RIGHT')">▶</div>
+    <div class="btn up" style="grid-column:2" onpointerdown="changeDir('UP')"></div>
+    <div class="btn left" style="grid-column:1" onpointerdown="changeDir('LEFT')"></div>
+    <div class="btn down" style="grid-column:2" onpointerdown="changeDir('DOWN')"></div>
+    <div class="btn right" style="grid-column:3" onpointerdown="changeDir('RIGHT')"></div>
 </div>
 
 <script>
