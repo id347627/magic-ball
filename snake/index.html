@@ -351,7 +351,7 @@
             document.getElementById('live-score').innerText = `💡: ${score}`;
             try { tg.HapticFeedback.impactOccurred('medium'); } catch(e){}
             
-            currentSpeed = Math.min(BASE_SPEED + (score * 0.15), MAX_SPEED);
+            currentSpeed = Math.min(BASE_SPEED + (score * 0.05), MAX_SPEED);
             
             let newFood;
             while (true) {
