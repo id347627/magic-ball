@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uk">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -32,26 +32,26 @@
         #game-wrapper { position: relative; display: flex; flex-direction: column; background: #fff; padding: 5px; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         
         #live-score {
-    align-self: flex-end;
-    margin-bottom: 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 80px; 
-    height: 24px;
-    background: var(--cell-bg);
-    color: #000;
-    border-radius: 20px;
-    font-weight: 900;
-    font-family: monospace; 
-    font-size: 0.9rem;
-    font-variant-numeric: tabular-nums;
-    z-index: 5;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    border: 1px solid #ccc;
-    padding: 0; 
-    overflow: hidden;
-}
+            align-self: flex-end;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 80px; 
+            height: 24px;
+            background: var(--cell-bg);
+            color: #000;
+            border-radius: 20px;
+            font-weight: 900;
+            font-family: 'Courier New', Courier, monospace; 
+            font-size: 0.9rem;
+            font-variant-numeric: tabular-nums;
+            z-index: 5;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border: 1px solid #ccc;
+            padding: 0; 
+            overflow: hidden;
+        }
 
         #col-headers { display: flex; margin-left: 25px; margin-bottom: 5px; }
         .col-label { font-size: 8px; text-align: center; writing-mode: vertical-rl; transform: rotate(180deg); color: #666; display: flex; align-items: center; justify-content: center; font-family: monospace; }
@@ -63,64 +63,62 @@
         #ui-middle-section { width: 100%; max-width: 300px; margin: 10px 0; text-align: center; font-family: monospace;}
         #greeting { font-size: 0.9rem; font-weight: bold; margin-bottom: 8px; color: var(--text-main); }
         .lb-container { background: rgba(255, 255, 255, 0.5); padding: 10px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.1); }
-        .lb-title { font-weight: 800; font-size: 0.75rem; color: #666; border-bottom: 1px solid #ccc; margin-bottom: 5px; padding-bottom: 3px; }
-        .lb-row { display: flex; justify-content: space-between; font-size: 0.85rem; padding: 2px 0; color: var(--text-main); }
+        .lb-title { font-weight: 800; font-size: 0.75rem; color: #666; border-bottom: 1px solid #ccc; margin-bottom: 5px; padding-bottom: 3px; display: flex; justify-content: space-between; align-items: center;}
+        
+        #lb-content { transition: opacity 0.3s ease; }
+        .lb-row { display: flex; justify-content: space-between; font-size: 0.85rem; padding: 2px 0; color: var(--text-main); animation: fadeIn 0.4s ease; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
         #overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; flex-direction: column; align-items: center; justify-content: center; border-radius: 5px; z-index: 10; color: white; }
         #overlay h2 { margin: 0; font-size: 1.5rem; color: var(--label-bg); }
-        #overlay button { background: var(--label-bg); border: none; padding: 10px 25px; font-weight: bold; border-radius: 8px; font-size: 1rem; color: #000; margin-top: 15px; cursor: pointer; }
+        .overlay-buttons { display: flex; gap: 10px; margin-top: 15px; }
+        #overlay button { background: var(--label-bg); border: none; padding: 10px 20px; font-weight: bold; border-radius: 8px; font-size: 1rem; color: #000; cursor: pointer; transition: transform 0.1s;}
+        #overlay button:active { transform: scale(0.95); }
+        #overlay button.share-btn { background: #3390ec; color: white; }
 
-#controls { 
-    margin-top: auto; 
-    margin-bottom: 10px; 
-    display: grid; 
-    grid-template-columns: repeat(3, 1fr); 
-    gap: 12px; 
-    width: 100%; 
-    max-width: 250px; 
-}
+        #controls { 
+            margin-top: auto; 
+            margin-bottom: 10px; 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 12px; 
+            width: 100%; 
+            max-width: 250px; 
+        }
 
-.btn { 
-    aspect-ratio: 1/1; 
-    background: radial-gradient(circle at 50% 60%, #1e3d2b 0%, #142b1e 100%); 
-    border-radius: 15px; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    box-shadow: 0 4px #0a1610;
-    user-select: none;
-    transition: all 0.05s ease;
-    -webkit-tap-highlight-color: transparent;
-}
+        .btn { 
+            aspect-ratio: 1/1; 
+            background: radial-gradient(circle at 50% 60%, #1e3d2b 0%, #142b1e 100%); 
+            border-radius: 15px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            box-shadow: 0 4px #0a1610;
+            user-select: none;
+            transition: all 0.05s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-.btn::before {
-    content: '';
-    display: block;
-    width: 24px;
-    height: 24px;
-    background-color: #ccc;
-    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-    filter: drop-shadow(0 2px 1px rgba(0,0,0,0.4));
-    transition: background-color 0.1s;
-}
-.up::before    { transform: rotate(0deg); }
-.down::before  { transform: rotate(180deg); }
-.left::before  { transform: rotate(-90deg); }
-.right::before { transform: rotate(90deg); }
+        .btn::before {
+            content: ''; display: block; width: 24px; height: 24px; background-color: #ccc;
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+            filter: drop-shadow(0 2px 1px rgba(0,0,0,0.4));
+            transition: background-color 0.1s;
+        }
+        
+        .up::before    { transform: rotate(0deg); }
+        .down::before  { transform: rotate(180deg); }
+        .left::before  { transform: rotate(-90deg); }
+        .right::before { transform: rotate(90deg); }
 
-.btn:active, .btn.pressed { 
-    transform: translateY(3px); 
-    box-shadow: 0 1px #050a07; 
-    background: radial-gradient(circle at 50% 60%, #2a523a 0%, #1e3d2b 100%);
-}
+        .btn:active, .btn.pressed { 
+            transform: translateY(3px); 
+            box-shadow: 0 1px #050a07; 
+            background: radial-gradient(circle at 50% 60%, #2a523a 0%, #1e3d2b 100%);
+        }
 
-.btn:active::before {
-    filter: drop-shadow(0 1px 0px rgba(0,0,0,0.6));
-    border-bottom-color: #aaa;
-}	
-		
-		
-		
+        .btn:active::before { filter: drop-shadow(0 1px 0px rgba(0,0,0,0.6)); border-bottom-color: #aaa; }	
     </style>
 </head>
 <body>
@@ -132,12 +130,16 @@
     </div>
     <img src="header-logo.svg" class="header-logo" alt="logo" onerror="this.style.display='none'">
 </div>
+
 <div id="game-wrapper">
-	<div id="live-score">💡: 0</div>    
+    <div id="live-score">💡: 0</div>    
     <div id="overlay">
         <h2>Гра закінчена</h2>
         <p>Ваш рахунок: <span id="final-score">0</span></p>
-        <button onclick="resetGame()">Знову</button>
+        <div class="overlay-buttons">
+            <button onclick="resetGame()">Знову</button>
+            <button class="share-btn" onclick="shareScore()">Поділитися</button>
+        </div>
     </div>
     <div id="col-headers"></div>
     <div id="main-area">
@@ -149,7 +151,7 @@
 <div id="ui-middle-section">
     <div id="greeting">Привіт! Давай спробуємо увійти в ТОП-5</div>
     <div class="lb-container">
-        <div class="lb-title">ТОП 5 ГРАВЦІВ</div>
+        <div class="lb-title">ТОП 5 ГРАВЦІВ <span id="lb-loader" style="display:none; font-size:10px; color:#999;">(оновлення...)</span></div>
         <div id="lb-content">Завантаження...</div>
     </div>
 </div>
@@ -198,7 +200,6 @@
     const iconOff = new Image(); iconOff.src = 'elec-off.svg';
     const iconOn = new Image(); iconOn.src = 'elec-on.svg';
 
-    // UI Labels
     const colHeaderDiv = document.getElementById('col-headers');
     for(let i=0; i<COLS; i++) {
         const d = document.createElement('div'); d.className = 'col-label';
@@ -217,13 +218,19 @@
 
     let snake = [{x: 5, y: 5}, {x: 4, y: 5}], food = {x: 12, y: 6};
     let dx = 1, dy = 0, nextDir = 'RIGHT', score = 0, isGameOver = false;
+    let actionLocked = false;
+
+    const BASE_SPEED = 5;
+    const MAX_SPEED = 20; 
+    let currentSpeed = BASE_SPEED;
 
     function renderLeaderboard(data) {
+        const lbBox = document.getElementById('lb-content');
         if (!data || data.length === 0) {
-            document.getElementById('lb-content').innerHTML = "Поки немає рекордів";
+            lbBox.innerHTML = "Поки немає рекордів";
             return;
         }
-        document.getElementById('lb-content').innerHTML = data.map((row, i) => `
+        lbBox.innerHTML = data.map((row, i) => `
             <div class="lb-row">
                 <span>${i+1}. ${row[0]}</span>
                 <b>${row[1]}</b>
@@ -241,24 +248,37 @@
 
     async function submitScoreAndFetch() {
         const lbBox = document.getElementById('lb-content');
-        lbBox.innerHTML = "Оновлення...";
+        const loader = document.getElementById('lb-loader');
+        
+        loader.style.display = 'inline';
+        lbBox.style.opacity = '0.5';
+
         try {
             const res = await fetch(SHEET_URL, {
                 method: 'POST',
                 body: JSON.stringify({ userId: userId, name: playerName, score: score }),
                 headers: { 'Content-Type': 'text/plain' }
             });
-            const text = await res.text(); // Read as text first to avoid JSON parse errors
+            const text = await res.text();
             const data = JSON.parse(text);
             renderLeaderboard(data);
         } catch (e) { 
             console.error("Score submission failed", e);
-            lbBox.innerHTML = "Помилка. Оновлення...";
-            fetchLeaderboard(); // Fallback if POST fails
+            fetchLeaderboard();
+        } finally {
+            loader.style.display = 'none';
+            lbBox.style.opacity = '1';
         }
     }
 
     fetchLeaderboard();
+
+    function shareScore() {
+        const botUrl = "https://t.me/AvalonZelenaElectricity_bot/pos"; 
+        const text = `Я зібрав ${score} 💡 у грі "Графік відключень"!\nСпробуй побити мій рекорд\nу сусідському змаганні!`;
+        const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(botUrl)}&text=${encodeURIComponent(text)}`;
+        tg.openTelegramLink(shareUrl);
+    }
 
     function draw() {
         ctx.fillStyle = "#d3d4d5"; ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -285,6 +305,8 @@
         if (nextDir === 'UP' && dy === 0) { dx = 0; dy = -1; }
         if (nextDir === 'DOWN' && dy === 0) { dx = 0; dy = 1; }
         
+        actionLocked = false;
+
         const head = {x: (snake[0].x + dx + COLS) % COLS, y: (snake[0].y + dy + ROWS) % ROWS};
         
         if (snake.some(p => p.x === head.x && p.y === head.y)) { 
@@ -299,19 +321,17 @@
             document.getElementById('live-score').innerText = `💡: ${score}`;
             try { tg.HapticFeedback.impactOccurred('medium'); } catch(e){}
             
-            // Logic to prevent food spawning on snake body
+            currentSpeed = Math.min(BASE_SPEED + (score * 0.15), MAX_SPEED);
+            
             let newFood;
             while (true) {
                 newFood = { 
                     x: Math.floor(Math.random() * COLS), 
                     y: Math.floor(Math.random() * ROWS) 
                 };
-                // Check if newFood coordinates overlap with any snake segment
-                const isOnSnake = snake.some(segment => segment.x === newFood.x && segment.y === newFood.y);
-                if (!isOnSnake) break; 
+                if (!snake.some(segment => segment.x === newFood.x && segment.y === newFood.y)) break; 
             }
             food = newFood;
-            
         } else { 
             snake.pop(); 
         }
@@ -326,9 +346,14 @@
     }
 
     function resetGame() {
-        snake = [{x: 5, y: 5}, {x: 4, y: 5}]; dx = 1; dy = 0; nextDir = 'RIGHT'; score = 0;
-        document.getElementById('live-score').innerText = `💡: 0`; // Reset live UI
+        snake = [{x: 5, y: 5}, {x: 4, y: 5}]; 
+        dx = 1; dy = 0; nextDir = 'RIGHT'; score = 0;
+        currentSpeed = BASE_SPEED; // Скидаємо швидкість
+        actionLocked = false;
+
+        document.getElementById('live-score').innerText = `💡: 0`; 
         document.getElementById('overlay').style.display = 'none';
+        
         let newFood;
         while (true) {
             newFood = { x: Math.floor(Math.random()*COLS), y: Math.floor(Math.random()*ROWS) };
@@ -336,21 +361,37 @@
         }
         food = newFood;
         isGameOver = false;
+        lastRenderTime = performance.now(); // Запобігає різкому стрибку кадрів при рестарті
         requestAnimationFrame(gameLoop);
     }
 
-    function changeDir(d) { if(!isGameOver) nextDir = d; }
-    window.addEventListener('keydown', e => { if(e.key.includes('Arrow')) changeDir(e.key.replace('Arrow', '').toUpperCase()); });
+    function changeDir(d) { 
+        if(isGameOver || actionLocked) return; 
+        
+        // Перевіряємо, чи не намагається гравець повернути в протилежний бік
+        if (d === 'UP' && dy === 0) { nextDir = d; actionLocked = true; }
+        if (d === 'DOWN' && dy === 0) { nextDir = d; actionLocked = true; }
+        if (d === 'LEFT' && dx === 0) { nextDir = d; actionLocked = true; }
+        if (d === 'RIGHT' && dx === 0) { nextDir = d; actionLocked = true; }
+    }
+    
+    window.addEventListener('keydown', e => { 
+        if(e.key.includes('Arrow')) changeDir(e.key.replace('Arrow', '').toUpperCase()); 
+    });
 
     let lastRenderTime = 0;
-    const GAME_SPEED = 5; 
+    
     function gameLoop(currentTime) {
         if (isGameOver) return;
         window.requestAnimationFrame(gameLoop);
         const secondsSinceLastRender = (currentTime - lastRenderTime) / 1000;
-        if (secondsSinceLastRender < 1 / GAME_SPEED) return;
+        
+        // Використовуємо динамічну currentSpeed
+        if (secondsSinceLastRender < 1 / currentSpeed) return;
+        
         lastRenderTime = currentTime;
-        update(); draw();
+        update(); 
+        draw();
     }
     window.requestAnimationFrame(gameLoop);
 </script>
