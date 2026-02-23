@@ -272,13 +272,43 @@
     }
 
     fetchLeaderboard();
+	
+	async function shareScore() {
+    const botUrl = "https://t.me/AvalonZelenaElectricity_bot/pos"; 
+    const textMessage = `Я зібрав ${score} 💡!\nСпробуй побити мій рекорд\nу сусідському змаганні!`;
+    const fullText = `${textMessage}\n\nГрати тут: ${botUrl}`;
 
-    function shareScore() {
+    if (navigator.share && navigator.canShare) {
+        try {
+            const canvas = document.getElementById("gameCanvas");
+            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+            const file = new File([blob], 'snake_score.png', { type: 'image/png' });
+            if (navigator.canShare({ files: [file] })) {
+                await navigator.share({
+                    title: 'Мій рекорд у Змійці!',
+                    text: fullText,
+                    files: [file]
+                });
+                return;
+            }
+        } catch (error) {
+            console.warn("Шеринг картинки скасовано або не вдався:", error);
+            if (error.name !== 'AbortError') {
+                fallbackShare();
+            }
+            return;
+        }
+    }
+
+    fallbackShare();
+
+    function fallbackShare() {
         const botUrl = "https://t.me/AvalonZelenaElectricity_bot/pos"; 
-        const text = `Я зібрав ${score} 💡 у грі "Графік відключень"!\nСпробуй побити мій рекорд\nу сусідському змаганні!`;
+        const text = `Я зібрав ${score} 💡!\nСпробуй побити мій рекорд\nу сусідському змаганні!`;
         const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(botUrl)}&text=${encodeURIComponent(text)}`;
         tg.openTelegramLink(shareUrl);
     }
+}
 
     function draw() {
         ctx.fillStyle = "#d3d4d5"; ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -348,7 +378,7 @@
     function resetGame() {
         snake = [{x: 5, y: 5}, {x: 4, y: 5}]; 
         dx = 1; dy = 0; nextDir = 'RIGHT'; score = 0;
-        currentSpeed = BASE_SPEED; // Скидаємо швидкість
+        currentSpeed = BASE_SPEED;
         actionLocked = false;
 
         document.getElementById('live-score').innerText = `💡: 0`; 
@@ -361,14 +391,13 @@
         }
         food = newFood;
         isGameOver = false;
-        lastRenderTime = performance.now(); // Запобігає різкому стрибку кадрів при рестарті
+        lastRenderTime = performance.now();
         requestAnimationFrame(gameLoop);
     }
 
     function changeDir(d) { 
         if(isGameOver || actionLocked) return; 
         
-        // Перевіряємо, чи не намагається гравець повернути в протилежний бік
         if (d === 'UP' && dy === 0) { nextDir = d; actionLocked = true; }
         if (d === 'DOWN' && dy === 0) { nextDir = d; actionLocked = true; }
         if (d === 'LEFT' && dx === 0) { nextDir = d; actionLocked = true; }
@@ -386,7 +415,6 @@
         window.requestAnimationFrame(gameLoop);
         const secondsSinceLastRender = (currentTime - lastRenderTime) / 1000;
         
-        // Використовуємо динамічну currentSpeed
         if (secondsSinceLastRender < 1 / currentSpeed) return;
         
         lastRenderTime = currentTime;
