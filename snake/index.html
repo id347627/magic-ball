@@ -12,6 +12,8 @@
             --label-bg: #ffbb42;
             --text-main: var(--tg-theme-text-color, #000000);
             --bg-color: var(--tg-theme-bg-color, #f0f2f5);
+			--app-height: 100vh;
+			--dpad-size: 150px;
         }
 
         * { 
@@ -28,8 +30,8 @@
             background-color: var(--bg-color); 
             color: var(--text-main);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            height: 100dvh; 
-            overflow: hidden;
+            height: var(--app-height); 
+			overflow: hidden;
         }
 
         #header, #game-wrapper, #ui-middle-section {
@@ -194,20 +196,18 @@
         /* Controls / D-pad */
         #controls {
             flex: 1 1 auto;
-            min-height: 120px;
+			width: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
+			margin-top: 10px;
         }
         
         .dpad {
             position: relative;
-            width: min(100%, 70vmin);
-            height: min(100%, 70vmin);
-            max-height: 100%;
-            max-width: 100%;
-            aspect-ratio: 1 / 1;
+            width: var(--dpad-size);
+			height: var(--dpad-size);
         }
 
         .dpad-btn {
@@ -330,15 +330,53 @@
         lbLoader: document.getElementById('lb-loader'),
         dateLabel: document.getElementById('today-date')
     };
+	
+	let CELL_SIZE, SVG_SIZE, ICON_OFFSET;
+	
+	function calculateLayout() {
+		const tg = window.Telegram.WebApp;
+		const availableHeight = tg.viewportStableHeight || window.innerHeight;
+		const availableWidth = window.innerWidth;
 
-    const availableWidth = window.innerWidth - 40;
-    const availableHeight = window.innerHeight - 380; 
-    const CELL_SIZE = Math.min(Math.floor(availableWidth / CONFIG.cols), Math.floor(availableHeight / CONFIG.rows), 25);
-    const SVG_SIZE = Math.floor(CELL_SIZE * 0.65);
-    const ICON_OFFSET = (CELL_SIZE - SVG_SIZE) / 2;
+		document.documentElement.style.setProperty('--app-height', `${availableHeight}px`);
 
-    DOM.canvas.width = CONFIG.cols * CELL_SIZE; 
-    DOM.canvas.height = CONFIG.rows * CELL_SIZE;
+		const fixedUIHeight = 180; 
+		const flexibleHeight = availableHeight - fixedUIHeight;
+
+		const targetCanvasHeight = flexibleHeight * 0.65;
+		
+		const cellWidthConstraint = Math.floor((availableWidth - 40) / CONFIG.cols);
+		const cellHeightConstraint = Math.floor(targetCanvasHeight / CONFIG.rows);
+		
+		CELL_SIZE = Math.min(cellWidthConstraint, cellHeightConstraint, 25);
+		SVG_SIZE = Math.floor(CELL_SIZE * 0.65);
+		ICON_OFFSET = (CELL_SIZE - SVG_SIZE) / 2;
+
+		const actualCanvasHeight = CONFIG.rows * CELL_SIZE;
+
+		DOM.canvas.width = CONFIG.cols * CELL_SIZE; 
+		DOM.canvas.height = actualCanvasHeight;
+
+		const spaceForDpad = flexibleHeight - actualCanvasHeight;
+		const finalDpadSize = Math.max(100, Math.min(spaceForDpad - 20, availableWidth - 40, 250));
+		
+		document.documentElement.style.setProperty('--dpad-size', `${finalDpadSize}px`);
+
+		if (gameState && !gameState.isGameOver && typeof game.draw === 'function') {
+			game.draw();
+		}
+	}
+
+	function initApp() {
+		tgApp.init();
+		setTimeout(() => {
+			calculateLayout();
+			game.initUI();
+			bindEvents();
+			leaderboardAPI.fetch();
+			game.reset();
+		}, 100);
+	}
 
     const iconOff = new Image(); iconOff.src = 'elec-off.svg';
     const iconOn = new Image(); iconOn.src = 'elec-on.svg';
@@ -349,16 +387,20 @@
         playerName: "Гравець",
         
         init() {
-            this.instance.ready();
-            this.instance.expand();
-            
-            const user = this.instance.initDataUnsafe?.user;
-            if (user) {
-                this.userId = String(user.id);
-                this.playerName = user.first_name || "Гравець";
-                if (user.last_name) this.playerName += " " + user.last_name;
-            }
-        },
+			this.instance.ready();
+			this.instance.expand();
+			const user = this.instance.initDataUnsafe?.user;
+			if (user) {
+				this.userId = String(user.id);
+				this.playerName = user.first_name || "Гравець";
+				if (user.last_name) this.playerName += " " + user.last_name;
+			}
+			this.instance.onEvent('viewportChanged', () => {
+				if (typeof calculateLayout === 'function') {
+					calculateLayout();
+				}
+			});
+		},
         
         triggerHaptic(type) {
             try {
