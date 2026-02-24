@@ -14,111 +14,236 @@
             --bg-color: var(--tg-theme-bg-color, #f0f2f5);
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-        body {
-            margin: 0; padding: 7px; display: flex; flex-direction: column;
-            align-items: center; background-color: var(--bg-color); color: var(--text-main);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            height: 100vh; overflow: hidden;
+        * { 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent; 
         }
 
-        #header { width: 100%; display: flex; justify-content: space-between; align-items: center; margin: 10px 0; max-width: 600px; }
-        .header-left { display: flex; flex-direction: column; gap: 2px; }
-        .title { font-weight: 800; font-size: 1.1rem; color: var(--text-main); line-height: 1.2; }
-        .date-label { background-color: var(--label-bg); color: #000; font-weight: bold; padding: 2px 8px; font-size: 0.9rem; display: inline-block; border-radius: 4px; }
-        .header-logo { height: 2.4rem; width: auto; object-fit: contain; }
-
-        #game-wrapper { position: relative; display: flex; flex-direction: column; background: #fff; padding: 5px; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        
-        #live-score {
-            align-self: flex-end;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 80px; 
-            height: 24px;
-            background: var(--cell-bg);
-            color: #000;
-            border-radius: 20px;
-            font-weight: 900;
-            font-family: 'Courier New', Courier, monospace; 
-            font-size: 0.9rem;
-            font-variant-numeric: tabular-nums;
-            z-index: 5;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            border: 1px solid #ccc;
-            padding: 0; 
+        body {
+            margin: 0; 
+            padding: 10px; 
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            background-color: var(--bg-color); 
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            height: 100dvh; 
             overflow: hidden;
         }
 
-        #col-headers { display: flex; margin-left: 25px; margin-bottom: 5px; }
-        .col-label { font-size: 8px; text-align: center; writing-mode: vertical-rl; transform: rotate(180deg); color: #666; display: flex; align-items: center; justify-content: center; font-family: monospace; }
-        #main-area { display: flex; flex-direction: row; }
-        #row-headers { display: flex; flex-direction: column; width: 25px; justify-content: space-around; padding-right: 4px; }
-        .row-label { background-color: var(--label-bg); color: #000; font-size: 8px; font-weight: bold; border-radius: 6px; display: flex; align-items: center; justify-content: center; height: 18px; font-family: monospace; }
-        canvas { display: block; border: 1px solid #ccc; background-color: var(--cell-bg); }
-
-        #ui-middle-section { width: 100%; max-width: 300px; margin: 10px 0; text-align: center; font-family: monospace;}
-        #greeting { font-size: 0.9rem; font-weight: bold; margin-bottom: 8px; color: var(--text-main); }
-        .lb-container { background: rgba(255, 255, 255, 0.5); padding: 10px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.1); }
-        .lb-title { font-weight: 800; font-size: 0.75rem; color: #666; border-bottom: 1px solid #ccc; margin-bottom: 5px; padding-bottom: 3px; display: flex; justify-content: space-between; align-items: center;}
-        
-        #lb-content { transition: opacity 0.3s ease; }
-        .lb-row { display: flex; justify-content: space-between; font-size: 0.85rem; padding: 2px 0; color: var(--text-main); animation: fadeIn 0.4s ease; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
-        #overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; flex-direction: column; align-items: center; justify-content: center; border-radius: 5px; z-index: 10; color: white; }
-        #overlay h2 { margin: 0; font-size: 1.5rem; color: var(--label-bg); }
-        .overlay-buttons { display: flex; gap: 10px; margin-top: 15px; }
-        #overlay button { background: var(--label-bg); border: none; padding: 10px 20px; font-weight: bold; border-radius: 8px; font-size: 1rem; color: #000; cursor: pointer; transition: transform 0.1s;}
-        #overlay button:active { transform: scale(0.95); }
-        #overlay button.share-btn { background: #3390ec; color: white; }
-
-        #controls { 
-            margin-top: auto; 
-            margin-bottom: 10px; 
-            display: grid; 
-            grid-template-columns: repeat(3, 1fr); 
-            gap: 12px; 
-            width: 100%; 
-            max-width: 250px; 
+        #header, #game-wrapper, #ui-middle-section {
+            flex-shrink: 0;
         }
 
-        .btn { 
-            aspect-ratio: 1/1; 
-            background: radial-gradient(circle at 50% 60%, #1e3d2b 0%, #142b1e 100%); 
-            border-radius: 15px; 
+        /* Header Styles */
+        #header { 
+            width: 100%; 
+            display: flex; 
+            align-items: center; 
+            margin: 0 0 5px 0; 
+            max-width: 600px; 
+            position: relative;
+        }
+        
+        .header-left { display: flex; flex-direction: column; gap: 2px; }
+        .title { font-weight: 800; font-size: 1.1rem; line-height: 1.2; }
+        .date-label { 
+            background-color: var(--label-bg); 
+            color: #000; 
+            font-weight: bold; 
+            padding: 2px 8px; 
+            font-size: 0.9rem; 
+            display: inline-block; 
+            border-radius: 4px; 
+        }
+        .header-logo { height: 2.4rem; width: auto; object-fit: contain; }
+
+        /* Game Area Styles */
+        #game-wrapper { 
+            position: relative; 
+            display: flex; 
+            flex-direction: column; 
+            background: #fff; 
+            padding: 5px; 
+            border-radius: 5px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); 
+        }
+
+        #live-score {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-width: 70px;
+            height: 24px;
+            padding: 0 10px;
+            background: var(--cell-bg);
+            border-radius: 999px;
+            font-weight: 900;
+            font-family: monospace;
+            font-variant-numeric: tabular-nums;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border: 1px solid #ccc;
+        }
+
+        #col-headers { display: flex; margin-left: 25px; margin-bottom: 5px; }
+        .col-label { 
+            font-size: 8px; 
+            text-align: center; 
+            writing-mode: vertical-rl; 
+            transform: rotate(180deg); 
+            color: #666; 
             display: flex; 
             align-items: center; 
             justify-content: center; 
-            box-shadow: 0 4px #0a1610;
-            user-select: none;
-            transition: all 0.05s ease;
-            -webkit-tap-highlight-color: transparent;
+            font-family: monospace; 
         }
 
-        .btn::before {
-            content: ''; display: block; width: 24px; height: 24px; background-color: #ccc;
-            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-            filter: drop-shadow(0 2px 1px rgba(0,0,0,0.4));
-            transition: background-color 0.1s;
+        #main-area { display: flex; flex-direction: row; }
+        
+        #row-headers { 
+            display: flex; 
+            flex-direction: column; 
+            width: 25px; 
+            justify-content: space-around; 
+            padding-right: 4px; 
         }
         
-        .up::before    { transform: rotate(0deg); }
-        .down::before  { transform: rotate(180deg); }
-        .left::before  { transform: rotate(-90deg); }
-        .right::before { transform: rotate(90deg); }
-
-        .btn:active, .btn.pressed { 
-            transform: translateY(3px); 
-            box-shadow: 0 1px #050a07; 
-            background: radial-gradient(circle at 50% 60%, #2a523a 0%, #1e3d2b 100%);
+        .row-label { 
+            background-color: var(--label-bg); 
+            color: #000; 
+            font-size: 8px; 
+            font-weight: bold; 
+            border-radius: 6px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            height: 18px; 
+            font-family: monospace; 
+        }
+        
+        canvas { 
+            display: block; 
+            border: 1px solid #ccc; 
+            background-color: var(--cell-bg); 
         }
 
-        .btn:active::before { filter: drop-shadow(0 1px 0px rgba(0,0,0,0.6)); border-bottom-color: #aaa; }	
+        /* Leaderboard Styles */
+        #ui-middle-section { 
+            width: 100%; 
+            max-width: 300px; 
+            margin: 10px 0; 
+            text-align: center; 
+            font-family: monospace;
+        }
+        
+        .lb-container { 
+            background: rgba(255, 255, 255, 0.5); 
+            padding: 10px; 
+            border-radius: 10px; 
+            border: 1px solid rgba(0,0,0,0.1); 
+        }
+        
+        .lb-title { 
+            font-weight: 800; 
+            font-size: 0.75rem; 
+            color: #666; 
+            border-bottom: 1px solid #ccc; 
+            margin-bottom: 5px; 
+            padding-bottom: 3px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+        }
+        
+        #lb-content { transition: opacity 0.3s ease; }
+        .lb-row { 
+            display: flex; 
+            justify-content: space-between; 
+            font-size: 0.85rem; 
+            padding: 2px 0; 
+            animation: fadeIn 0.4s ease; 
+        }
+
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(5px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+
+        /* Overlay Styles */
+        #overlay { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.8); display: none; flex-direction: column; 
+            align-items: center; justify-content: center; border-radius: 5px; 
+            z-index: 10; color: white; 
+        }
+        #overlay h2 { margin: 0; font-size: 1.5rem; color: var(--label-bg); }
+        .overlay-buttons { display: flex; gap: 10px; margin-top: 15px; }
+        #overlay button { 
+            background: var(--label-bg); border: none; padding: 10px 20px; 
+            font-weight: bold; border-radius: 8px; font-size: 1rem; color: #000; 
+            cursor: pointer; transition: transform 0.1s;
+        }
+        #overlay button:active { transform: scale(0.95); }
+        #overlay button.share-btn { background: #3390ec; color: white; }
+
+        /* Controls / D-pad */
+        #controls {
+            flex: 1 1 auto;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .dpad {
+            position: relative;
+            width: min(100%, 70vmin);
+            height: min(100%, 70vmin);
+            max-height: 100%;
+            max-width: 100%;
+            aspect-ratio: 1 / 1;
+        }
+
+        .dpad-btn {
+            position: absolute;
+            width: 34%;
+            height: 34%;
+            border-radius: 50%;
+            background: radial-gradient(circle at 50% 60%, #1e3d2b 0%, #142b1e 100%);
+            box-shadow: 0 6px #0a1610;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.08s ease;
+            user-select: none;
+        }
+
+        .dpad-btn::before {
+            content: '';
+            width: 55%;
+            height: 55%;
+            background: #ccc;
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+        }
+
+        .up    { top: 0; left: 50%; transform: translateX(-50%); }
+        .down  { bottom: 0; left: 50%; transform: translateX(-50%) rotate(180deg); }
+        .left  { left: 0; top: 50%; transform: translateY(-50%) rotate(-90deg); }
+        .right { right: 0; top: 50%; transform: translateY(-50%) rotate(90deg); }
+
+        .dpad-btn:active {
+            transform: translateX(-50%) translateY(4px);
+            box-shadow: 0 2px #050a07;
+        }
+        .left:active  { transform: translateY(-50%) translateX(4px) rotate(-90deg); }
+        .right:active { transform: translateY(-50%) translateX(-4px) rotate(90deg); }
+        .down:active  { transform: translateX(-50%) translateY(-4px) rotate(180deg); }
     </style>
 </head>
 <body>
@@ -128,17 +253,17 @@
         <div class="title">Графік погодинних відключень</div>
         <div class="date-container"><span class="date-label" id="today-date">--.--.----</span></div>
     </div>
+    <div id="live-score">💡: 0</div>
     <img src="header-logo.svg" class="header-logo" alt="logo" onerror="this.style.display='none'">
 </div>
 
 <div id="game-wrapper">
-    <div id="live-score">💡: 0</div>    
     <div id="overlay">
         <h2>Гра закінчена</h2>
         <p>Ваш рахунок: <span id="final-score">0</span></p>
         <div class="overlay-buttons">
-            <button onclick="resetGame()">Знову</button>
-            <button class="share-btn" onclick="shareScore()">Поділитися</button>
+            <button id="btn-restart">Знову</button>
+            <button id="btn-share" class="share-btn">Поділитися</button>
         </div>
     </div>
     <div id="col-headers"></div>
@@ -149,279 +274,338 @@
 </div>
 
 <div id="ui-middle-section">
-    <div id="greeting">Привіт! Давай спробуємо увійти в ТОП-5</div>
     <div class="lb-container">
-        <div class="lb-title">ТОП 5 ГРАВЦІВ <span id="lb-loader" style="display:none; font-size:10px; color:#999;">(оновлення...)</span></div>
-        <div id="lb-content">Завантаження...</div>
+        <div class="lb-title">ТОП 5 ГРАВЦІВ <span id="lb-loader" style="display:none; font-size:10px; color:#999;">оновлення...</span></div>
+        <div id="lb-content">
+            <div class="lb-row"><span>1.</span><b>#</b></div>
+            <div class="lb-row"><span>2.</span><b>#</b></div>
+            <div class="lb-row"><span>3.</span><b>#</b></div>
+            <div class="lb-row"><span>4.</span><b>#</b></div>
+            <div class="lb-row"><span>5.</span><b>#</b></div>
+        </div>
     </div>
 </div>
 
 <div id="controls">
-    <div class="btn up" style="grid-column:2" onpointerdown="changeDir('UP')"></div>
-    <div class="btn left" style="grid-column:1" onpointerdown="changeDir('LEFT')"></div>
-    <div class="btn down" style="grid-column:2" onpointerdown="changeDir('DOWN')"></div>
-    <div class="btn right" style="grid-column:3" onpointerdown="changeDir('RIGHT')"></div>
+    <div class="dpad" id="dpad-container">
+        <div class="dpad-btn up" data-dir="UP"></div>
+        <div class="dpad-btn left" data-dir="LEFT"></div>
+        <div class="dpad-btn right" data-dir="RIGHT"></div>
+        <div class="dpad-btn down" data-dir="DOWN"></div>
+    </div>
 </div>
 
 <script>
-    const SHEET_URL = "https://script.google.com/macros/s/AKfycbxr9OemBs-vGeQPGzK1VkPinTDKqCyn_iSRM0Yy5ISYxx3BsJUSdaPelikII6l-lKYeUQ/exec"; 
+    const CONFIG = {
+        sheetUrl: "https://script.google.com/macros/s/AKfycbxr9OemBs-vGeQPGzK1VkPinTDKqCyn_iSRM0Yy5ISYxx3BsJUSdaPelikII6l-lKYeUQ/exec",
+        botUrl: "https://t.me/AvalonZelenaElectricity_bot/pos",
+        rows: 12,
+        cols: 24,
+        baseSpeed: 5,
+        maxSpeed: 20
+    };
 
-    const tg = window.Telegram.WebApp;
-    tg.ready();
-    tg.expand();
+    const gameState = {
+        snake: [],
+        food: {x: 0, y: 0},
+        dx: 1,
+        dy: 0,
+        nextDir: 'RIGHT',
+        score: 0,
+        isGameOver: false,
+        actionLocked: false,
+        currentSpeed: CONFIG.baseSpeed,
+        lastRenderTime: 0
+    };
 
-    let playerName = "Гравець";
-    let userId = "0";
+    const DOM = {
+        canvas: document.getElementById("gameCanvas"),
+        ctx: document.getElementById("gameCanvas").getContext("2d"),
+        scoreDisplay: document.getElementById('live-score'),
+        finalScore: document.getElementById('final-score'),
+        overlay: document.getElementById('overlay'),
+        colHeaders: document.getElementById('col-headers'),
+        rowHeaders: document.getElementById('row-headers'),
+        lbContent: document.getElementById('lb-content'),
+        lbLoader: document.getElementById('lb-loader'),
+        dateLabel: document.getElementById('today-date')
+    };
 
-    function updatePlayerName() {
-        const user = tg.initDataUnsafe?.user;
-        if (user) {
-            userId = String(user.id);
-            playerName = user.first_name || "Гравець";
-            if (user.last_name) playerName += " " + user.last_name;
-        }
-        document.getElementById('greeting').innerText = `Привіт, ${playerName}!\nCпробуй увійти в сусідський ТОП-5`;
-    }
-    updatePlayerName();
-
-    document.getElementById('today-date').innerText = new Date().toLocaleDateString('uk-UA');
-
-    const canvas = document.getElementById("gameCanvas");
-    const ctx = canvas.getContext("2d");
-    const ROWS = 12, COLS = 24;
-    
     const availableWidth = window.innerWidth - 40;
     const availableHeight = window.innerHeight - 380; 
-    const CELL_SIZE = Math.min(Math.floor(availableWidth / COLS), Math.floor(availableHeight / ROWS), 25);
+    const CELL_SIZE = Math.min(Math.floor(availableWidth / CONFIG.cols), Math.floor(availableHeight / CONFIG.rows), 25);
     const SVG_SIZE = Math.floor(CELL_SIZE * 0.65);
+    const ICON_OFFSET = (CELL_SIZE - SVG_SIZE) / 2;
 
-    canvas.width = COLS * CELL_SIZE; canvas.height = ROWS * CELL_SIZE;
+    DOM.canvas.width = CONFIG.cols * CELL_SIZE; 
+    DOM.canvas.height = CONFIG.rows * CELL_SIZE;
 
     const iconOff = new Image(); iconOff.src = 'elec-off.svg';
     const iconOn = new Image(); iconOn.src = 'elec-on.svg';
 
-    const colHeaderDiv = document.getElementById('col-headers');
-    for(let i=0; i<COLS; i++) {
-        const d = document.createElement('div'); d.className = 'col-label';
-        d.style.width = CELL_SIZE + 'px';
-        d.innerText = `${i.toString().padStart(2, '0')}-${(i+1).toString().padStart(2, '0')}`;
-        colHeaderDiv.appendChild(d);
-    }
-    const rowHeaderDiv = document.getElementById('row-headers');
-    for(let i=1; i<=6; i++) {
-        [".1", ".2"].forEach(sub => {
-            const d = document.createElement('div'); d.className = 'row-label';
-            d.innerText = i + sub; d.style.height = (CELL_SIZE - 2) + 'px';
-            rowHeaderDiv.appendChild(d);
-        });
-    }
-
-    let snake = [{x: 5, y: 5}, {x: 4, y: 5}], food = {x: 12, y: 6};
-    let dx = 1, dy = 0, nextDir = 'RIGHT', score = 0, isGameOver = false;
-    let actionLocked = false;
-
-    const BASE_SPEED = 5;
-    const MAX_SPEED = 20; 
-    let currentSpeed = BASE_SPEED;
-
-    function renderLeaderboard(data) {
-        const lbBox = document.getElementById('lb-content');
-        if (!data || data.length === 0) {
-            lbBox.innerHTML = "Поки немає рекордів";
-            return;
-        }
-        lbBox.innerHTML = data.map((row, i) => `
-            <div class="lb-row">
-                <span>${i+1}. ${row[0]}</span>
-                <b>${row[1]}</b>
-            </div>
-        `).join('');
-    }
-
-    async function fetchLeaderboard() {
-        try {
-            const res = await fetch(SHEET_URL);
-            const data = await res.json();
-            renderLeaderboard(data);
-        } catch (e) { document.getElementById('lb-content').innerHTML = "Помилка завантаження"; }
-    }
-
-    async function submitScoreAndFetch() {
-        const lbBox = document.getElementById('lb-content');
-        const loader = document.getElementById('lb-loader');
+    const tgApp = {
+        instance: window.Telegram.WebApp,
+        userId: "0",
+        playerName: "Гравець",
         
-        loader.style.display = 'inline';
-        lbBox.style.opacity = '0.5';
+        init() {
+            this.instance.ready();
+            this.instance.expand();
+            
+            const user = this.instance.initDataUnsafe?.user;
+            if (user) {
+                this.userId = String(user.id);
+                this.playerName = user.first_name || "Гравець";
+                if (user.last_name) this.playerName += " " + user.last_name;
+            }
+        },
+        
+        triggerHaptic(type) {
+            try {
+                if (type === 'impact') this.instance.HapticFeedback.impactOccurred('medium');
+                if (type === 'warning') this.instance.HapticFeedback.notificationOccurred('warning');
+            } catch(e) { console.warn("Haptic disabled/unavailable"); }
+        },
+        
+        async share(score, canvas) {
+            const textMessage = `Я зібрав ${score} 💡!\nСпробуй побити мій рекорд\nу сусідському змаганні!`;
+            const fullText = `${textMessage}\n\nГрати тут: ${CONFIG.botUrl}`;
 
-        try {
-            const res = await fetch(SHEET_URL, {
-                method: 'POST',
-                body: JSON.stringify({ userId: userId, name: playerName, score: score }),
-                headers: { 'Content-Type': 'text/plain' }
-            });
-            const text = await res.text();
-            const data = JSON.parse(text);
-            renderLeaderboard(data);
-        } catch (e) { 
-            console.error("Score submission failed", e);
-            fetchLeaderboard();
-        } finally {
-            loader.style.display = 'none';
-            lbBox.style.opacity = '1';
+            if (navigator.share && navigator.canShare) {
+                try {
+                    const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+                    const file = new File([blob], 'snake_score.png', { type: 'image/png' });
+                    
+                    if (navigator.canShare({ files: [file] })) {
+                        await navigator.share({ title: 'Мій рекорд!', text: fullText, files: [file] });
+                        return;
+                    }
+                } catch (error) {
+                    if (error.name !== 'AbortError') this.fallbackShare(textMessage);
+                    return;
+                }
+            }
+            this.fallbackShare(textMessage);
+        },
+        
+        fallbackShare(text) {
+            const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(CONFIG.botUrl)}&text=${encodeURIComponent(text)}`;
+            this.instance.openTelegramLink(shareUrl);
         }
-    }
+    };
 
-    fetchLeaderboard();
-	
-	async function shareScore() {
-    const botUrl = "https://t.me/AvalonZelenaElectricity_bot/pos"; 
-    const textMessage = `Я зібрав ${score} 💡!\nСпробуй побити мій рекорд\nу сусідському змаганні!`;
-    const fullText = `${textMessage}\n\nГрати тут: ${botUrl}`;
+    const leaderboardAPI = {
+        async fetch() {
+            try {
+                const res = await fetch(CONFIG.sheetUrl);
+                const data = await res.json();
+                this.render(data);
+            } catch (e) { DOM.lbContent.innerHTML = "Помилка завантаження"; }
+        },
+        
+        async submitAndFetch(score) {
+            DOM.lbLoader.style.display = 'inline';
+            DOM.lbContent.style.opacity = '0.5';
 
-    if (navigator.share && navigator.canShare) {
-        try {
-            const canvas = document.getElementById("gameCanvas");
-            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-            const file = new File([blob], 'snake_score.png', { type: 'image/png' });
-            if (navigator.canShare({ files: [file] })) {
-                await navigator.share({
-                    title: 'Мій рекорд у Змійці!',
-                    text: fullText,
-                    files: [file]
+            try {
+                const res = await fetch(CONFIG.sheetUrl, {
+                    method: 'POST',
+                    body: JSON.stringify({ userId: tgApp.userId, name: tgApp.playerName, score: score }),
+                    headers: { 'Content-Type': 'text/plain' }
                 });
+                const data = JSON.parse(await res.text());
+                this.render(data);
+            } catch (e) { 
+                console.error("Score submission failed", e);
+                this.fetch();
+            } finally {
+                DOM.lbLoader.style.display = 'none';
+                DOM.lbContent.style.opacity = '1';
+            }
+        },
+        
+        render(data) {
+            if (!data || data.length === 0) {
+                DOM.lbContent.innerHTML = "Поки немає рекордів";
                 return;
             }
-        } catch (error) {
-            console.warn("Шеринг картинки скасовано або не вдався:", error);
-            if (error.name !== 'AbortError') {
-                fallbackShare();
-            }
-            return;
+            DOM.lbContent.innerHTML = data.map((row, i) => `
+                <div class="lb-row">
+                    <span>${i+1}. ${row[0]}</span>
+                    <b>${row[1]}</b>
+                </div>
+            `).join('');
         }
-    }
+    };
 
-    fallbackShare();
+    const game = {
+        initUI() {
+            DOM.dateLabel.innerText = new Date().toLocaleDateString('uk-UA');
 
-    function fallbackShare() {
-        const botUrl = "https://t.me/AvalonZelenaElectricity_bot/pos"; 
-        const text = `Я зібрав ${score} 💡!\nСпробуй побити мій рекорд\nу сусідському змаганні!`;
-        const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(botUrl)}&text=${encodeURIComponent(text)}`;
-        tg.openTelegramLink(shareUrl);
-    }
-}
-
-    function draw() {
-        ctx.fillStyle = "#d3d4d5"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-        const iconOffset = (CELL_SIZE - SVG_SIZE) / 2;
-        ctx.strokeStyle = "rgba(255,255,255,0.4)";
-        for (let x = 0; x < COLS; x++) {
-            for (let y = 0; y < ROWS; y++) {
-                ctx.strokeRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-                if (iconOff.complete && (x !== food.x || y !== food.y)) 
-                    ctx.drawImage(iconOff, x * CELL_SIZE + iconOffset, y * CELL_SIZE + iconOffset, SVG_SIZE, SVG_SIZE);
+            for(let i=0; i < CONFIG.cols; i++) {
+                const d = document.createElement('div'); 
+                d.className = 'col-label';
+                d.style.width = CELL_SIZE + 'px';
+                d.innerText = `${i.toString().padStart(2, '0')}-${(i+1).toString().padStart(2, '0')}`;
+                DOM.colHeaders.appendChild(d);
             }
+
+            for(let i=1; i<=6; i++) {
+                [".1", ".2"].forEach(sub => {
+                    const d = document.createElement('div'); 
+                    d.className = 'row-label';
+                    d.innerText = i + sub; 
+                    d.style.height = (CELL_SIZE - 2) + 'px';
+                    DOM.rowHeaders.appendChild(d);
+                });
+            }
+        },
+
+        spawnFood() {
+            while (true) {
+                const newFood = { 
+                    x: Math.floor(Math.random() * CONFIG.cols), 
+                    y: Math.floor(Math.random() * CONFIG.rows) 
+                };
+                if (!gameState.snake.some(segment => segment.x === newFood.x && segment.y === newFood.y)) {
+                    gameState.food = newFood;
+                    break;
+                }
+            }
+        },
+
+        reset() {
+            gameState.snake = [{x: 5, y: 5}, {x: 4, y: 5}]; 
+            gameState.dx = 1; 
+            gameState.dy = 0; 
+            gameState.nextDir = 'RIGHT'; 
+            gameState.score = 0;
+            gameState.currentSpeed = CONFIG.baseSpeed;
+            gameState.actionLocked = false;
+            gameState.isGameOver = false;
+
+            DOM.scoreDisplay.innerText = `💡: 0`; 
+            DOM.overlay.style.display = 'none';
+            
+            this.spawnFood();
+            gameState.lastRenderTime = performance.now();
+            requestAnimationFrame(this.loop.bind(this));
+        },
+
+        handleGameOver() {
+            gameState.isGameOver = true;
+            tgApp.triggerHaptic('warning');
+            DOM.finalScore.innerText = gameState.score;
+            DOM.overlay.style.display = 'flex';
+            leaderboardAPI.submitAndFetch(gameState.score);
+        },
+
+        changeDir(d) { 
+            if(gameState.isGameOver || gameState.actionLocked) return; 
+            
+            if (d === 'UP' && gameState.dy === 0) { gameState.nextDir = d; gameState.actionLocked = true; }
+            if (d === 'DOWN' && gameState.dy === 0) { gameState.nextDir = d; gameState.actionLocked = true; }
+            if (d === 'LEFT' && gameState.dx === 0) { gameState.nextDir = d; gameState.actionLocked = true; }
+            if (d === 'RIGHT' && gameState.dx === 0) { gameState.nextDir = d; gameState.actionLocked = true; }
+        },
+
+        update() {
+            if (gameState.nextDir === 'LEFT' && gameState.dx === 0) { gameState.dx = -1; gameState.dy = 0; }
+            if (gameState.nextDir === 'RIGHT' && gameState.dx === 0) { gameState.dx = 1; gameState.dy = 0; }
+            if (gameState.nextDir === 'UP' && gameState.dy === 0) { gameState.dx = 0; gameState.dy = -1; }
+            if (gameState.nextDir === 'DOWN' && gameState.dy === 0) { gameState.dx = 0; gameState.dy = 1; }
+            
+            gameState.actionLocked = false;
+
+            const head = {
+                x: (gameState.snake[0].x + gameState.dx + CONFIG.cols) % CONFIG.cols, 
+                y: (gameState.snake[0].y + gameState.dy + CONFIG.rows) % CONFIG.rows
+            };
+            
+            if (gameState.snake.some(p => p.x === head.x && p.y === head.y)) { 
+                this.handleGameOver(); 
+                return; 
+            }
+            
+            gameState.snake.unshift(head);
+			
+            if (head.x === gameState.food.x && head.y === gameState.food.y) {
+                gameState.score++;
+                DOM.scoreDisplay.innerText = `💡: ${gameState.score}`;
+                tgApp.triggerHaptic('impact');
+                
+                gameState.currentSpeed = Math.min(CONFIG.baseSpeed + (gameState.score * 0.075), CONFIG.maxSpeed);
+                this.spawnFood();
+            } else { 
+                gameState.snake.pop(); 
+            }
+        },
+
+        draw() {
+            const ctx = DOM.ctx;
+            ctx.fillStyle = "#d3d4d5"; 
+            ctx.fillRect(0, 0, DOM.canvas.width, DOM.canvas.height);
+            ctx.strokeStyle = "rgba(255,255,255,0.4)";
+            
+            for (let x = 0; x < CONFIG.cols; x++) {
+                for (let y = 0; y < CONFIG.rows; y++) {
+                    ctx.strokeRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                    if (iconOff.complete && (x !== gameState.food.x || y !== gameState.food.y)) {
+                        ctx.drawImage(iconOff, x * CELL_SIZE + ICON_OFFSET, y * CELL_SIZE + ICON_OFFSET, SVG_SIZE, SVG_SIZE);
+                    }
+                }
+            }
+            
+            ctx.font = `${CELL_SIZE * 0.8}px serif`; 
+            ctx.textAlign = "center"; 
+            ctx.textBaseline = "middle";
+            ctx.fillText("💡", gameState.food.x * CELL_SIZE + CELL_SIZE/2, gameState.food.y * CELL_SIZE + CELL_SIZE/2 + 2);
+            
+            gameState.snake.forEach(p => {
+                ctx.fillStyle = "#ffffff"; 
+                ctx.fillRect(p.x * CELL_SIZE, p.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                if (iconOn.complete) {
+                    ctx.drawImage(iconOn, p.x * CELL_SIZE + ICON_OFFSET, p.y * CELL_SIZE + ICON_OFFSET, SVG_SIZE, SVG_SIZE);
+                }
+            });
+        },
+
+        loop(currentTime) {
+            if (gameState.isGameOver) return;
+            requestAnimationFrame(this.loop.bind(this));
+            
+            const secondsSinceLastRender = (currentTime - gameState.lastRenderTime) / 1000;
+            if (secondsSinceLastRender < 1 / gameState.currentSpeed) return;
+            
+            gameState.lastRenderTime = currentTime;
+            this.update(); 
+            this.draw();
         }
-        ctx.font = `${CELL_SIZE * 0.8}px serif`; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-        ctx.fillText("💡", food.x * CELL_SIZE + CELL_SIZE/2, food.y * CELL_SIZE + CELL_SIZE/2 + 2);
-        snake.forEach(p => {
-            ctx.fillStyle = "#ffffff"; ctx.fillRect(p.x * CELL_SIZE, p.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-            if (iconOn.complete) ctx.drawImage(iconOn, p.x * CELL_SIZE + iconOffset, p.y * CELL_SIZE + iconOffset, SVG_SIZE, SVG_SIZE);
+    };
+    function bindEvents() {
+        window.addEventListener('keydown', e => { 
+            if(e.key.includes('Arrow')) {
+                game.changeDir(e.key.replace('Arrow', '').toUpperCase()); 
+            }
+        });
+        document.getElementById('btn-restart').addEventListener('click', () => game.reset());
+        document.getElementById('btn-share').addEventListener('click', () => tgApp.share(gameState.score, DOM.canvas));
+        document.getElementById('dpad-container').addEventListener('pointerdown', (e) => {
+            const btn = e.target.closest('.dpad-btn');
+            if (btn && btn.dataset.dir) {
+                game.changeDir(btn.dataset.dir);
+            }
         });
     }
 
-    function update() {
-        if (nextDir === 'LEFT' && dx === 0) { dx = -1; dy = 0; }
-        if (nextDir === 'RIGHT' && dx === 0) { dx = 1; dy = 0; }
-        if (nextDir === 'UP' && dy === 0) { dx = 0; dy = -1; }
-        if (nextDir === 'DOWN' && dy === 0) { dx = 0; dy = 1; }
-        
-        actionLocked = false;
-
-        const head = {x: (snake[0].x + dx + COLS) % COLS, y: (snake[0].y + dy + ROWS) % ROWS};
-        
-        if (snake.some(p => p.x === head.x && p.y === head.y)) { 
-            handleGameOver(); 
-            return; 
-        }
-        
-        snake.unshift(head);
-        
-        if (head.x === food.x && head.y === food.y) {
-            score++;
-            document.getElementById('live-score').innerText = `💡: ${score}`;
-            try { tg.HapticFeedback.impactOccurred('medium'); } catch(e){}
-            
-            currentSpeed = Math.min(BASE_SPEED + (score * 0.075), MAX_SPEED);
-            
-            let newFood;
-            while (true) {
-                newFood = { 
-                    x: Math.floor(Math.random() * COLS), 
-                    y: Math.floor(Math.random() * ROWS) 
-                };
-                if (!snake.some(segment => segment.x === newFood.x && segment.y === newFood.y)) break; 
-            }
-            food = newFood;
-        } else { 
-            snake.pop(); 
-        }
+    function initApp() {
+        tgApp.init();
+        game.initUI();
+        bindEvents();
+        leaderboardAPI.fetch();
+        game.reset();
     }
-
-    function handleGameOver() {
-        isGameOver = true;
-        try { tg.HapticFeedback.notificationOccurred('warning'); } catch(e){}
-        document.getElementById('final-score').innerText = score;
-        document.getElementById('overlay').style.display = 'flex';
-        submitScoreAndFetch();
-    }
-
-    function resetGame() {
-        snake = [{x: 5, y: 5}, {x: 4, y: 5}]; 
-        dx = 1; dy = 0; nextDir = 'RIGHT'; score = 0;
-        currentSpeed = BASE_SPEED;
-        actionLocked = false;
-
-        document.getElementById('live-score').innerText = `💡: 0`; 
-        document.getElementById('overlay').style.display = 'none';
-        
-        let newFood;
-        while (true) {
-            newFood = { x: Math.floor(Math.random()*COLS), y: Math.floor(Math.random()*ROWS) };
-            if (!snake.some(s => s.x === newFood.x && s.y === newFood.y)) break;
-        }
-        food = newFood;
-        isGameOver = false;
-        lastRenderTime = performance.now();
-        requestAnimationFrame(gameLoop);
-    }
-
-    function changeDir(d) { 
-        if(isGameOver || actionLocked) return; 
-        
-        if (d === 'UP' && dy === 0) { nextDir = d; actionLocked = true; }
-        if (d === 'DOWN' && dy === 0) { nextDir = d; actionLocked = true; }
-        if (d === 'LEFT' && dx === 0) { nextDir = d; actionLocked = true; }
-        if (d === 'RIGHT' && dx === 0) { nextDir = d; actionLocked = true; }
-    }
-    
-    window.addEventListener('keydown', e => { 
-        if(e.key.includes('Arrow')) changeDir(e.key.replace('Arrow', '').toUpperCase()); 
-    });
-
-    let lastRenderTime = 0;
-    
-    function gameLoop(currentTime) {
-        if (isGameOver) return;
-        window.requestAnimationFrame(gameLoop);
-        const secondsSinceLastRender = (currentTime - lastRenderTime) / 1000;
-        
-        if (secondsSinceLastRender < 1 / currentSpeed) return;
-        
-        lastRenderTime = currentTime;
-        update(); 
-        draw();
-    }
-    window.requestAnimationFrame(gameLoop);
+    document.addEventListener("DOMContentLoaded", initApp);
 </script>
 </body>
 </html>
