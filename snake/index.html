@@ -94,7 +94,7 @@
 		
 		canvas { display: block; border: 1px solid #ccc; background-color: var(--cell-bg); }
 
-        #ui-middle-section { width: 100%; max-width: 300px; margin: 10px 0; text-align: center; }
+        #ui-middle-section { width: 100%; max-width: 300px; margin: 5px 0; text-align: center; }
         .lb-container { background: rgba(255, 255, 255, 0.5); padding: 10px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.1); }
         .lb-title { font-weight: 800; font-size: 0.75rem; color: #666; border-bottom: 1px solid #ccc; margin-bottom: 5px; padding-bottom: 3px; }
         .lb-row { display: flex; justify-content: space-between; font-size: 0.85rem; padding: 2px 0; color: var(--text-main); }
@@ -104,7 +104,7 @@
         #overlay button { background: var(--label-bg); border: none; padding: 10px 25px; font-weight: bold; border-radius: 8px; font-size: 1rem; color: #000; margin-top: 15px; cursor: pointer; }
 
 #controls { 
-    margin: auto auto 20px auto;
+    margin: auto auto 5px auto;
     display: grid; 
     grid-template-areas: 
         ".  up  ."
@@ -112,7 +112,7 @@
         ". down .";
     grid-template-columns: repeat(3, 1fr); 
     grid-template-rows: repeat(3, 1fr);
-    gap: 12px; 
+    gap: 7px; 
     width: 100%; 
     max-width: 220px;
     aspect-ratio: 1/1;
@@ -121,20 +121,19 @@
 .btn { 
     aspect-ratio: 1/1; 
     background: radial-gradient(circle at 50% 60%, #1e3d2b 0%, #142b1e 100%); 
-    border-radius: 50%;
+    border-radius: 40%;
     display: flex; 
     align-items: center; 
     justify-content: center; 
-    box-shadow: 0 6px #0a1610; 
     user-select: none;
     -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation; /* Прибирає затримку кліку на iPhone */
+    touch-action: manipulation;
 }
 
-.up    { grid-area: up; transform: rotate(0deg); }
-.down  { grid-area: down; transform: rotate(180deg); }
-.left  { grid-area: left; transform: rotate(-90deg); }
-.right { grid-area: right; transform: rotate(90deg); }
+.up    { grid-area: up; transform: rotate(0deg); box-shadow: 0 6px #0a1610; }
+.down  { grid-area: down; transform: rotate(180deg); box-shadow: 0 -6px #0a1610; }
+.left  { grid-area: left; transform: rotate(-90deg); box-shadow: -6px 0px #0a1610; }
+.right { grid-area: right; transform: rotate(90deg); box-shadow: 6px 0px #0a1610; }
 
 .btn::before {
     content: '';
@@ -145,8 +144,19 @@
 
 .btn:active {
     filter: brightness(1.2);
-    box-shadow: 0 2px #050a07;
     translate: 0 4px; 
+}
+.up:active {
+    box-shadow: 0 2px #050a07; 
+}
+.down:active {
+    box-shadow: 0 -2px #050a07; 
+}
+.left:active {
+    box-shadow: -2px 0 #050a07; 
+}
+.right:active {
+    box-shadow: 2px 0 #050a07; 
 }
 
     </style>
