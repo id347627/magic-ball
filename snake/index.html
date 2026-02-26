@@ -68,7 +68,7 @@
         }
 		
         #col-headers { display: flex; margin-left: 25px; margin-bottom: 5px; }
-        .col-label { font-size: 8px; text-align: center; writing-mode: vertical-rl; transform: rotate(180deg); color: #666; display: flex; align-items: center; justify-content: center; font-family: monospace; }
+        .col-label { font-size: 10px; text-align: center; writing-mode: vertical-rl; transform: rotate(180deg); color: #666; display: flex; align-items: center; justify-content: center; font-family: monospace; }
         #main-area { display: flex; flex-direction: row; }
         
 		#row-headers { 
@@ -79,10 +79,13 @@
 }
 
 .row-label { 
+	height: 15px;
+    min-height: 15px;
+    max-height: 15px;
     background-color: var(--label-bg); 
     color: #000; 
-    font-size: 8px; 
-	width: 25px;
+    font-size: 10px; 
+	width: 23px;
     font-weight: bold; 
     border-radius: 666px; 
     display: flex; 
@@ -90,6 +93,13 @@
     justify-content: center; 
     font-family: monospace;
     box-sizing: border-box; 
+	margin: 0 auto;  
+}
+.row-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 25px;
 }
 		
 		canvas { display: block; border: 1px solid #ccc; background-color: var(--cell-bg); }
@@ -249,14 +259,22 @@
         colHeaderDiv.appendChild(d);
     }
     const rowHeaderDiv = document.getElementById('row-headers');
-    for(let i=1; i<=6; i++) {
-        [".1", ".2"].forEach(sub => {
-            const d = document.createElement('div'); d.className = 'row-label';
-            d.innerText = i + sub; 
-			d.style.height = CELL_SIZE + 'px';
-            rowHeaderDiv.appendChild(d);
-        });
-    }
+
+for (let i = 1; i <= 6; i++) {
+    [".1", ".2"].forEach(sub => {
+
+        const rowWrapper = document.createElement('div');
+        rowWrapper.className = 'row-wrapper';
+        rowWrapper.style.height = CELL_SIZE + 'px';
+
+        const d = document.createElement('div');
+        d.className = 'row-label';
+        d.innerText = i + sub;
+
+        rowWrapper.appendChild(d);
+        rowHeaderDiv.appendChild(rowWrapper);
+    });
+}
 
     let snake = [{x: 5, y: 5}, {x: 4, y: 5}], food = {x: 12, y: 6};
     let dx = 1, dy = 0, nextDir = 'RIGHT', score = 0, isGameOver = false;
@@ -284,7 +302,6 @@
 
     async function submitScoreAndFetch() {
         const lbBox = document.getElementById('lb-content');
-        //lbBox.innerHTML = "Оновлення...";
         try {
             const res = await fetch(SHEET_URL, {
                 method: 'POST',
@@ -368,7 +385,7 @@
 
     function resetGame() {
         snake = [{x: 5, y: 5}, {x: 4, y: 5}]; dx = 1; dy = 0; nextDir = 'RIGHT'; score = 0;
-        document.getElementById('live-score').innerText = `💡: 0`; // Reset live UI
+        document.getElementById('live-score').innerText = `💡: 0`;
         document.getElementById('overlay').style.display = 'none';
         let newFood;
         while (true) {
@@ -392,9 +409,9 @@
     if (!isOpposite) {
         nextDir = d;
         
-        if (window.Telegram?.WebApp?.HapticFeedback) {
-            window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
-        }
+        //if (window.Telegram?.WebApp?.HapticFeedback) {
+        //    window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
+        //}
     }
 }
 
@@ -411,7 +428,9 @@ window.addEventListener('keydown', e => {
         if (isGameOver) return;
         window.requestAnimationFrame(gameLoop);
         const secondsSinceLastRender = (currentTime - lastRenderTime) / 1000;
-        if (secondsSinceLastRender < 1 / Math.min(GAME_SPEED + (score * 0.08), MAX_SPEED)) return;
+		//const speed=Math.min(BASE_SPEED+Math.log(score+1)*2,MAX_SPEED);
+		const speed=Math.min(GAME_SPEED + (score * 0.08), MAX_SPEED)
+        if (secondsSinceLastRender < 1 /speed ) return;
         lastRenderTime = currentTime;
         update(); draw();
     }
