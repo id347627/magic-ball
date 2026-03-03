@@ -330,7 +330,7 @@
     function shareResult() {
     try { tg.HapticFeedback.impactOccurred('medium'); } catch(e){}
     const text = `🏆 Мій рекорд в Енерго-Змійці: ${score} 💡\nЗнайди свій графік відключень та грай зі мною!\n[ЕНЕРГО-ЗМІЙКА🐍](https://t.me/AvalonZelenaElectricity_bot/pos)`;
-    tg.switchInlineQuery(text);
+    tg.switchInlineQuery(text, ["users", "groups", "channels"]);
 	}
 
 
