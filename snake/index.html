@@ -79,9 +79,9 @@
 }
 
 .row-label { 
-	height: 15px;
-    min-height: 15px;
-    max-height: 15px;
+	height: 13px;
+    min-height: 13px;
+    max-height: 13px;
     background-color: var(--label-bg); 
     color: #000; 
     font-size: 10px; 
@@ -112,6 +112,18 @@
         #overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; flex-direction: column; align-items: center; justify-content: center; border-radius: 5px; z-index: 10; color: white; }
         #overlay h2 { margin: 0; font-size: 1.5rem; color: var(--label-bg); }
         #overlay button { background: var(--label-bg); border: none; padding: 10px 25px; font-weight: bold; border-radius: 8px; font-size: 1rem; color: #000; margin-top: 15px; cursor: pointer; }
+
+		#overlay .button-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+#overlay button.share-btn {
+    background: transparent;
+    border: 2px solid var(--label-bg);
+    color: var(--label-bg);
+}
 
 #controls { 
     margin: auto auto 5px auto;
@@ -186,7 +198,10 @@
     <div id="overlay">
         <h2>Гра закінчена</h2>
         <p>Ваш рахунок: <span id="final-score">0</span></p>
-        <button onclick="resetGame()">Знову</button>
+        <div class="button-group">
+        	<button onclick="resetGame()">Знову</button>
+        	<button class="share-btn" onclick="shareResult()">Поділитися</button>
+    	</div>
     </div>
     <div id="col-headers"></div>
     <div id="main-area">
@@ -339,6 +354,12 @@ for (let i = 1; i <= 6; i++) {
         });
     }
 
+	function shareResult() {
+    try { tg.HapticFeedback.impactOccurred('medium'); } catch(e){}
+    const text = `🏆 Мій рекорд в Енерго-Змійці: ${score} 💡\nЗнайди свій графік відключень та грай зі мною!\n[ЕНЕРГО-ЗМІЙКА🐍](https://t.me/AvalonZelenaElectricity_bot/pos)`;
+    tg.switchInlineQuery(text);
+	}
+
     function update() {
         if (nextDir === 'LEFT' && dx === 0) { dx = -1; dy = 0; }
         if (nextDir === 'RIGHT' && dx === 0) { dx = 1; dy = 0; }
@@ -379,14 +400,14 @@ for (let i = 1; i <= 6; i++) {
         isGameOver = true;
         try { tg.HapticFeedback.notificationOccurred('warning'); } catch(e){}
         document.getElementById('final-score').innerText = score;
-        document.getElementById('overlay').style.display = 'flex';
+        document.getElementById('').style.display = 'flex';
         submitScoreAndFetch();
     }
 
     function resetGame() {
         snake = [{x: 5, y: 5}, {x: 4, y: 5}]; dx = 1; dy = 0; nextDir = 'RIGHT'; score = 0;
         document.getElementById('live-score').innerText = `💡: 0`;
-        document.getElementById('overlay').style.display = 'none';
+        document.getElementById('').style.display = 'none';
         let newFood;
         while (true) {
             newFood = { x: Math.floor(Math.random()*COLS), y: Math.floor(Math.random()*ROWS) };
