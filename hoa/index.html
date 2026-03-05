@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Незадоволені роботою сервісної компанії?</title>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { line-height: 1.6; color: #333; background: #f4f4f4; }
+        
+        section { padding: 80px 20px; min-height: 60vh; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        h2 { font-size: 2.5rem; margin-bottom: 40px; text-align: center; }
+        .container { max-width: 900px; width: 100%; }
+        .card { background: white; padding: 20px; margin: 15px 0; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        
+        /* Кольори секцій */
+        .bg-light { background: #ffffff; }
+        .bg-blue { background: #007bff; color: white; }
+        .bg-green { background: rgba(37,61,42,1); color: white; }
+        
+        /* Форма */
+        form { display: flex; flex-direction: column; width: 100%; }
+        input, textarea { padding: 15px; margin: 10px 0; border: none; border-radius: 5px; }
+        button { padding: 15px; background: #333; color: white; border: none; cursor: pointer; border-radius: 5px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <section class="bg-green" data-aos="fade-up">
+        <h1>Наше ОСББ Avalon Zelena заслуговує на кращий сервіс</h1>
+        <p>Ми хочемо обговорити неефективність роботи поточної управлінської компанії AFS (Avalon Facilities Service).</p>
+    </section>
+
+    <section class="bg-light" data-aos="fade-right">
+        <div class="container">
+            <h2>Проблеми з технічним обслуговуванням</h2>
+            <div class="card"><strong>Ліфти:</strong> Постійні поломки, відсутність регулярного огляду.</div>
+            <div class="card"><strong>Комунікації:</strong> Неусунуті протікання в підвалах, запах сирості.</div>
+        </div>
+    </section>
+
+    <section style="background: #e9ecef;" data-aos="fade-left">
+        <div class="container">
+            <h2>Санітарний стан території</h2>
+            <div class="card"><strong>Під'їзди:</strong> Прибирання проводиться "для галочки", сміття роками.</div>
+            <div class="card"><strong>Прибудинкова територія:</strong> Відсутність вивозу сміття взимку та влітку.</div>
+        </div>
+    </section>
+
+    <section class="bg-light" data-aos="fade-up">
+        <div class="container">
+            <h2>Фінансова непрозорість</h2>
+            <div class="card"><strong>Звітність:</strong> Відсутність деталізації витрат по статтях.</div>
+            <div class="card"><strong>Тарифи:</strong> Підвищення цін без обґрунтування та голосування мешканців.</div>
+        </div>
+    </section>
+
+    <section style="background: #fff3cd;" data-aos="fade-up">
+        <div class="container">
+            <h2>Відсутність комунікації</h2>
+            <div class="card"><strong>Диспетчери:</strong> Ігнорування аварійних заявок.</div>
+            <div class="card"><strong>Зворотний зв'язок:</strong> На хамство менеджерів скарги не розглядаються.</div>
+        </div>
+    </section>
+
+    <section class="bg-green" data-aos="zoom-in">
+		<div class="container" style="text-align: center;">
+			<h2>Поділіться своєю думкою</h2>
+			<p style="margin-bottom: 30px;">Надсилайте відгук про поточну управлінську компанію в наш Telegram bot.</p>
+			<p style="margin-bottom: 30px;">Можна прикріпити фото, відео, скріншоти.</p>
+			
+			<a href="https://t.me/AvalonZelenaElectricity_bot" target="_blank" 
+			style="background: white; color: #666; padding: 20px 40px; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 1.2rem; transition: 0.3s; display: inline-block;">
+			Написати в Telegram
+			</a>
+		</div>
+	</section>
+
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ duration: 1000 });
+    </script>
+</body>
+</html>
