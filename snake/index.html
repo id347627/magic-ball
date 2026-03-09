@@ -108,6 +108,7 @@
         .lb-container { background: rgba(255, 255, 255, 0.5); padding: 10px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.1); }
         .lb-title { font-weight: 800; font-size: 0.75rem; color: #666; border-bottom: 1px solid #ccc; margin-bottom: 5px; padding-bottom: 3px; }
         .lb-row { display: flex; justify-content: space-between; font-size: 0.85rem; padding: 2px 0; color: var(--text-main); }
+		.platform-icon {font-size: 0.7rem; margin-left: 5px; opacity: 0.7; }
 
         #overlay { 
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
@@ -233,7 +234,9 @@
     const tg = window.Telegram.WebApp;
     tg.ready();
     tg.expand();
-
+	
+	const isMobile = ['android', 'ios'].includes(tg.platform);
+	const platform = isMobile ?`📱`:`💻`;
     let playerName = "Гравець";
     let userId = "0";
 
@@ -293,12 +296,26 @@
             document.getElementById('lb-content').innerHTML = "Поки немає рекордів";
             return;
         }
-        document.getElementById('lb-content').innerHTML = data.map((row, i) => `
-            <div class="lb-row">
-                <span>${i+1}. ${row[0]}</span>
-                <b>${row[1]}</b>
-            </div>
-        `).join('');
+		document.getElementById('lb-content').innerHTML = data.map((row, i) => {
+			const name = row[0];
+			const score = row[1];
+			const isMobile = row[2];
+			
+			// Визначаємо іконку на основі флагу
+			let platformIcon = "";
+			if (isMobile === true) {
+				platformIcon = '<span class="platform-icon">📱</span>';
+			} else if (isMobile === false) {
+				platformIcon = '<span class="platform-icon">💻</span>';
+			}
+
+			return `
+				<div class="lb-row">
+					<span>${i + 1}. ${name}</span>
+					<b>${platformIcon} ${score}</b>
+				</div>
+			`;
+		}).join('');
     }
 
     async function fetchLeaderboard() {
@@ -314,7 +331,7 @@
         try {
             const res = await fetch(SHEET_URL, {
                 method: 'POST',
-                body: JSON.stringify({ userId: userId, name: playerName, score: score }),
+                body: JSON.stringify({ userId: userId, name: playerName, score: score, isMobile: isMobile }),
                 headers: { 'Content-Type': 'text/plain' }
             });
             const text = await res.text();
@@ -332,7 +349,7 @@
         	if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium'); 
     	} catch(e) {}
     	const botAppUrl = "https://t.me/AvalonZelenaElectricity_bot/pos"; 
-    	const message = `🏆 Мій рекорд в Електрик-Змійці 🐍: ${score} 💡\n🕹️ Спробуй побити мій рекорд за посиланням:`;
+    	const message = `🏆 Мій рекорд в Електрик-Змійці 🐍: ${score}💡 на ${platform}.\nСпробуй побити мій рекорд за посиланням:`;
     	const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(botAppUrl)}&text=${encodeURIComponent(message)}`;
     	tg.openTelegramLink(shareUrl);
 	}
