@@ -6,81 +6,179 @@
     <title>Незадоволені роботою сервісної компанії?</title>
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { line-height: 1.6; color: #333; background: #f4f4f4; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         
-        section { padding: 80px 20px; min-height: 60vh; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        h2 { font-size: 2.5rem; margin-bottom: 40px; text-align: center; }
+        body { line-height: 1.6; color: #333; background: #f4f4f4; overflow-x: hidden; }
+        
+        /* Layout */
+        section { 
+            padding: 60px 20px; 
+            min-height: 80vh; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+        }
+        
         .container { max-width: 900px; width: 100%; }
-        .card { background: white; padding: 20px; margin: 15px 0; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         
-        /* Кольори секцій */
+        h1 { font-size: 2.2rem; text-align: center; margin-bottom: 20px; line-height: 1.2; }
+        h2 { font-size: 1.8rem; margin-bottom: 30px; text-align: center; }
+        p { margin-bottom: 15px; text-align: center; }
+
+        .card { 
+            background: white; 
+            padding: 20px; 
+            margin: 15px 0; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
+            color: #333;
+        }
+
+        /* Media Gallery System */
+        .media-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .media-gallery img, 
+        .media-gallery video {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            display: block;
+            object-fit: cover;
+            max-height: 400px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .media-gallery audio {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        /* Colors */
         .bg-light { background: #ffffff; }
-        .bg-blue { background: #007bff; color: white; }
-        .bg-green { background: rgba(37,61,42,1); color: white; }
+        .bg-grey { background: #e9ecef; }
+        .bg-yellow { background: #fff3cd; }
+        .bg-green { background: #253d2a; color: white; }
         
-        /* Форма */
-        form { display: flex; flex-direction: column; width: 100%; }
-        input, textarea { padding: 15px; margin: 10px 0; border: none; border-radius: 5px; }
-        button { padding: 15px; background: #333; color: white; border: none; cursor: pointer; border-radius: 5px; font-weight: bold; }
+        /* Button */
+        .btn-cta {
+            background: white; 
+            color: #253d2a; 
+            padding: 18px 30px; 
+            text-decoration: none; 
+            border-radius: 50px; 
+            font-weight: bold; 
+            font-size: 1.1rem; 
+            transition: transform 0.2s; 
+            display: inline-block;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .btn-cta:active { transform: scale(0.95); }
+
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            h1 { font-size: 1.7rem; }
+            h2 { font-size: 1.5rem; }
+            section { padding: 40px 15px; }
+            .media-gallery { grid-template-columns: 1fr; } /* Stack media on small phones */
+        }
     </style>
 </head>
 <body>
 
-    <section class="bg-green" data-aos="fade-up">
-        <h1>Наше ОСББ Avalon Zelena заслуговує на кращий сервіс</h1>
-        <p>Ми хочемо обговорити неефективність роботи поточної управлінської компанії AFS (Avalon Facilities Service).</p>
-    </section>
-
-    <section class="bg-light" data-aos="fade-right">
+    <section class="bg-green" data-aos="fade-down">
         <div class="container">
-            <h2>Проблеми з технічним обслуговуванням</h2>
-            <div class="card"><strong>Ліфти:</strong> Постійні поломки, відсутність регулярного огляду.</div>
-            <div class="card"><strong>Комунікації:</strong> Неусунуті протікання в підвалах, запах сирості.</div>
+            <h1>Наше ОСББ Avalon Zelena заслуговує на кращий сервіс</h1>
+            <p>Розглянемо неефективність роботи поточної управлінської компанії AFS (Avalon Facilities Service)</p>
+            
+            <!--
+			<div class="media-gallery">
+                <img src="https://via.placeholder.com/800x400?text=ЖК+Avalon+Zelena" alt="ЖК Avalon Zelena">
+            </div>
+			<div class="media-gallery">
+                <video controls>
+                    <source src="your-video-file.mp4" type="video/mp4">
+                    Ваш браузер не підтримує відео.
+                </video>
+            </div>
+			<div class="media-gallery">
+                <audio controls>
+                    <source src="audio-clip.mp3" type="audio/mpeg">
+                </audio>
+            </div>
+			--!>
         </div>
     </section>
-
-    <section style="background: #e9ecef;" data-aos="fade-left">
-        <div class="container">
-            <h2>Санітарний стан території</h2>
-            <div class="card"><strong>Під'їзди:</strong> Прибирання проводиться "для галочки", сміття роками.</div>
-            <div class="card"><strong>Прибудинкова територія:</strong> Відсутність вивозу сміття взимку та влітку.</div>
-        </div>
-    </section>
-
+    
     <section class="bg-light" data-aos="fade-up">
         <div class="container">
             <h2>Фінансова непрозорість</h2>
-            <div class="card"><strong>Звітність:</strong> Відсутність деталізації витрат по статтях.</div>
-            <div class="card"><strong>Тарифи:</strong> Підвищення цін без обґрунтування та голосування мешканців.</div>
-        </div>
+            <div class="card"><strong>"Свої" підрядники:</strong> До прикладу, пропозиція резервного живлення від УК АФС: містить несумісне обладнання, завищена ціна на обладнання, відсутнє попереднє обговорення з власниками квартир, відсутні альтернативні підрядники, відсутнє обгрунтування їхнього навязаного варіанта.</div>
+            <div class="media-gallery">
+                <img src="https://via.placeholder.com/400x300?text=Звіт+1" alt="Документ 1">
+                <img src="https://via.placeholder.com/400x300?text=Звіт+2" alt="Документ 2">
+            </div>
+            <div class="card"><strong>Тарифи:</strong> Від самого початку АФС аргументувало вартість своїх послуг, що викликало більше запитань ніж вносило ясності. В тариф вписувалась амортизація неіснуючого обладнянна, вписувався неіснуючий інвентар. Їх звітність по виконаній роботі на 100%, що не завжди відповідає дійсності - неякісно пофарбовані або місцями недофарбовані газові труби, або підгання наданих послуг до потрібних ЇМ значень - заміна дверного упору 2 люд/год. Оскільки така звітність породжувала більше незадоволеності їх сертифікованими послугаи, вони просто прибрали люд/год зі своїх папірців )</div>
+			<div class="card"><strong>"Свій" голова ОСББ:</strong> Володимир першочергово є працівником АФС, якого запропонували нам на посаду голови ОСББ для спрощення процесів, але це спрощення процесів стосувалось тільки АФС, де "свій" голова ОСББ завжди підпише потрібні акти без притензій.</div>
+			<div class="card"><strong>Справжня місія АФС:</strong> Окрім догляду за майном і територією ОСББ, АФС мали контролювати незавершені дрібні (в межах всього проєкту) роботи забудовника. Залишене будівельне сміття забудовником - оплатили мешканці. Піднятий пішохідний переїзд - наче закрив забудовник. Незасипані дашки галькою - наче закрив забудовник. Необкладені плиткою вуличні спуски - оплатили мешканці. Відсутня комплектація в ліфті - спершу розповідали що це не передбачено проєктом, але наче закриє забудовник. На всі притензії щодо незавершеності якихось робіт АФС посилається на "не передбачено проєктом", але проєкт не показує ). Незавершені роботи вспливають і після 4 років "здачи" будинка. <strong>Тому можна говорити що їхня справжня місія - затягування часу і надання посередніх послуг за завищеними цінами.</strong> ОСББ на 29тис м2 це справжній ласий шматок, на якому можна гарно заробити.</div>
+			
+		</div>
     </section>
 
-    <section style="background: #fff3cd;" data-aos="fade-up">
+    <section class="bg-yellow" data-aos="fade-left">
         <div class="container">
             <h2>Відсутність комунікації</h2>
-            <div class="card"><strong>Диспетчери:</strong> Ігнорування аварійних заявок.</div>
-            <div class="card"><strong>Зворотний зв'язок:</strong> На хамство менеджерів скарги не розглядаються.</div>
+            <div class="card"><strong>Комунікація з представниками АФС:</strong> Ігнорування незручних запитань в чаті та хамство.</div>
+            <p>Записи розмов з головою:</p>
+            <div class="media-gallery">
+                <audio controls>
+                    <source src="audio-clip.mp3" type="audio/mpeg">
+                </audio>
+            </div>
         </div>
     </section>
+	
+	<!--
+	<section class="bg-grey" data-aos="fade-right">
+        <div class="container">
+            <h2>Проблеми з технічним обслуговуванням</h2>
+            <div class="card"><strong>Ліфти:</strong> Постійні поломки, відсутність регулярного огляду.</div>
+            <div class="card"><strong>Комунікації:</strong> Неусунуті протікання в підвалах.</div>
+            
+            <div class="media-gallery">
+                <video controls>
+                    <source src="your-video-file.mp4" type="video/mp4">
+                    Ваш браузер не підтримує відео.
+                </video>
+            </div>
+        </div>
+    </section>
+	--!>
 
     <section class="bg-green" data-aos="zoom-in">
-		<div class="container" style="text-align: center;">
-			<h2>Поділіться своєю думкою</h2>
-			<p style="margin-bottom: 30px;">Надсилайте відгук про поточну управлінську компанію в наш Telegram bot.</p>
-			<p style="margin-bottom: 30px;">Можна прикріпити фото, відео, скріншоти.</p>
-			
-			<a href="https://t.me/AvalonZelenaElectricity_bot" target="_blank" 
-			style="background: white; color: #666; padding: 20px 40px; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 1.2rem; transition: 0.3s; display: inline-block;">
-			Написати в Telegram
-			</a>
-		</div>
-	</section>
-
+        <div class="container" style="text-align: center;">
+            <h2>Поділіться своєю думкою</h2>
+            <p>Надсилайте фото, відео чи аудіо скарги в наш Telegram bot.</p>
+            
+            <a href="https://t.me/AvalonZelenaElectricity_bot" target="_blank" class="btn-cta">
+                Написати в Telegram
+            </a>
+        </div>
+    </section>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        AOS.init({ duration: 1000 });
+        AOS.init({ 
+            duration: 800,
+            once: true // Animation happens only once while scrolling down
+        });
     </script>
 </body>
 </html>
