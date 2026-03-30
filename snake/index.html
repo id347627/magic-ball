@@ -229,10 +229,7 @@
 </div>
 
 <script>
-    const part1 = "https://script.google.com/macros/s/";
-	const part2 = "AKfycbxr9OemBs-vGeQPGzK1VkPinTDKqCyn_iSRM0Yy5ISYxx3BsJUSdaPelikII6l-lKYeUQ";
-	const part3 = "/exec?all=false";
-	const SHEET_URL = part1 + part2 + part3;
+    const SHEET_URL = "https://script.google.com/macros/s/AKfycbxr9OemBs-vGeQPGzK1VkPinTDKqCyn_iSRM0Yy5ISYxx3BsJUSdaPelikII6l-lKYeUQ/exec"; 
 	
     const tg = window.Telegram.WebApp;
     tg.ready();
@@ -323,20 +320,10 @@
 
     async function fetchLeaderboard() {
         try {
-			const res = await fetch(SHEET_URL, {
-			method: 'GET',
-			mode: 'cors',
-			cache: 'no-cache'
-			});
-			if (!res.ok) throw new Error('Network response was not ok');
-			const data = await res.json();
-			if(!data || data.length === 0) throw new Error("No data");
-			renderLeaderboard(data);
-        } 
-		catch (e) 
-		{ 
-			document.getElementById('lb-content').innerHTML = "Помилка завантаження";
-		}
+            const res = await fetch(SHEET_URL);
+            const data = await res.json();
+            renderLeaderboard(data);
+        } catch (e) { document.getElementById('lb-content').innerHTML = "Помилка завантаження"; }
     }
 
     async function submitScoreAndFetch() {
@@ -344,7 +331,6 @@
         try {
             const res = await fetch(SHEET_URL, {
                 method: 'POST',
-				mode: 'no-cors',
                 body: JSON.stringify({ userId: userId, name: playerName, score: score, isMobile: isMobile }),
                 headers: { 'Content-Type': 'text/plain' }
             });
