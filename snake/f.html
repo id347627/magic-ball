@@ -8,7 +8,439 @@
     <style>
         :root {
             --tg-bg: #ffffff;
-            --cell-bg: #d3d4d5;
+            --cell-bg: #d3d4d5;<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Power Outage - Hall of Fame</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --tg-bg: #ffffff;
+            --cell-bg: transparent; /* Changed from #d3d4d5 to allow bg image through */
+            --label-bg: #edb92e; /* Original gold color */
+            --text-main: #000000;
+            --bg-color: #f0f2f5;
+            --snake-white: rgba(255, 255, 255, 0.6);
+            --card-bg: rgba(255, 255, 255, 0.85); /* New variable for semi-transparent list rows */
+            --text-rank: #555; /* Original rank color */
+        }
+
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--bg-color);
+            background-image: url('bg1.jpg'); /* Set the background image to the yard scene */
+            background-size: cover; /* Make the image cover the entire body */
+            background-position: center; /* Center the image */
+            background-repeat: no-repeat; /* Do not repeat the image */
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Add a subtle dark overlay to the entire body to improve contrast */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.15); /* Very subtle dark overlay */
+            z-index: 0;
+        }
+
+        /* Animated Background Snake Canvas */
+        #bg-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1; /* Place above the overlay but under the content */
+            background-color: var(--cell-bg);
+            opacity: 0.35; /* Make the entire canvas subtly transparent to let the yard show through */
+        }
+
+        #header {
+            width: 100%;
+            max-width: 600px;
+            padding: 30px 20px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.9); /* Increased opacity for better text readability */
+            backdrop-filter: blur(8px); /* Slightly stronger blur for a better effect */
+            border-bottom: 4px solid var(--label-bg); /* Sligthly thicker border */
+            z-index: 10;
+            margin-top: 20px; /* Space from the very top */
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .title { 
+            font-weight: 800; 
+            font-size: 1.3rem; 
+            text-transform: uppercase; 
+            line-height: 1.2;
+            color: #222; /* Darker title color */
+            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
+        }
+        .subtitle { 
+            font-size: 1.1rem; 
+            color: #555; 
+            margin-top: 10px; 
+            font-weight: bold; 
+            font-style: italic; /* Style the subtitle a bit more */
+        }
+
+        /* Scrolling Container */
+        #credits-wrap {
+            flex: 1;
+            width: 100%;
+            max-width: 420px; /* Slightly wider */
+            overflow: hidden;
+            position: relative;
+            margin-top: 25px;
+            margin-bottom: 20px; /* Provide some bottom spacing */
+            z-index: 5; /* Place above the canvas and overlay but under the header */
+        }
+
+        #scroll-content {
+            position: absolute;
+            width: 100%;
+            top: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px; /* Slightly more gap between rows */
+            padding-bottom: 150px; /* Increased bottom padding to prevent cut-offs at end of scroll */
+        }
+
+        .lb-row {
+            background: var(--card-bg); /* Use the semi-transparent card background */
+            margin: 0 15px; /* Sligthly tighter margin */
+            padding: 10px 15px; /* More internal padding for a richer feel */
+            border-radius: 15px; /* More rounded corners */
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between; /* This pushes content to opposite sides */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08); /* Stronger shadow for depth */
+            border-left: 6px solid var(--label-bg); /* Sligthly thicker left border */
+            backdrop-filter: blur(2px); /* Add a very subtle blur to the cards themselves */
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        /* Subtle hover effect (for interactive version - though this one autoscrolls) */
+        .lb-row:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+        }
+
+        .left-group {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            min-width: 0; /* Allows text truncation if name is too long */
+        }
+
+        .right-group {
+            display: flex;
+            align-items: center;
+            position: relative;
+            white-space: nowrap;
+        }
+
+        .rank { 
+            font-weight: 900; 
+            color: var(--text-rank); 
+            width: 20px; 
+            flex-shrink: 0; 
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: left;
+        }
+        
+        /* Stylized Rank Icon */
+        .rank-number {
+            font-size: 1.1rem;
+            margin-right: 0px;
+        }
+        .rank-symbol {
+            font-size: 0.9rem;
+            color: var(--label-bg);
+            opacity: 0.8;
+        }
+
+        .player-name { 
+            font-weight: bold; 
+            font-size: 1.2rem; 
+            color: #333; /* Darker name color */
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+            white-space: nowrap; 
+        }
+        
+        .score-container {
+            display: flex;
+            align-items: baseline;
+            gap: 5px;
+        }
+
+        .score-val { 
+            font-family: monospace; 
+            font-weight: 900; 
+            font-size: 1.4rem; /* Larger, more prominent score */
+            color: var(--label-bg); /* Use the gold color */
+            text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.1);
+        }
+        .score-unit {
+            font-size: 1rem;
+            color: #666;
+            margin-left: 2px;
+        }
+
+        #audio-controls {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 100;
+        }
+
+        .audio-btn {
+            background: var(--label-bg);
+            border: none;
+            padding: 12px; /* Slightly larger padding */
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem; /* Larger emoji */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15); /* Stronger shadow */
+            color: #fff; /* Make emoji icon white, so we need to set button color to match label accent color */
+            box-shadow: 0 5px #c98c1a;
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+
+        .audio-btn:active { 
+            box-shadow: 0 1px #c98c1a; /* Adjusted active state for thicker border */
+            transform: translateY(4px); 
+        }
+
+        footer {
+            padding: 25px; /* More padding */
+            z-index: 10;
+            /* Update background gradient to work well with image background */
+            background: linear-gradient(transparent, rgba(240, 242, 245, 0.5));
+            width: 100%;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+            display: none; /* Hide footer for a cleaner auto-scrolling credits view */
+        }
+        
+        /* New styling for thank you note at end of list */
+        .thank-you-note {
+            text-align: center; 
+            padding: 60px 20px; 
+            font-weight: bold; 
+            color: #555; /* Darker color for note on semi-trans bg */
+            font-size: 1.3rem;
+            margin: 0 20px;
+            background: var(--card-bg);
+            backdrop-filter: blur(2px);
+            border-radius: 15px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<div id="header">
+    <div class="title">🏆 ФІНАЛ ЗМАГАНЬ 🏆</br>🐍 ЕЛЕКТРИК-ЗМІЙКИ 🐍</div>
+    <div class="subtitle">Зал слави енергонезалежних</div>
+</div>
+
+<div id="credits-wrap">
+    <div id="scroll-content">
+        </div>
+</div>
+
+<div id="audio-controls">
+    <button class="audio-btn" onclick="toggleMusic()" id="music-toggle">🔇</button>
+</div>
+
+<footer>
+    </footer>
+
+<audio id="bg-music" loop>
+    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+    const part1 = "https://script.google.com/macros/s/";
+    const part2 = "AKfycbxr9OemBs-vGeQPGzK1VkPinTDKqCyn_iSRM0Yy5ISYxx3BsJUSdaPelikII6l-lKYeUQ";
+    const part3 = "/exec?all=true";
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+
+    // --- Background Animation Logic (Keep) ---
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+    const music = document.getElementById('bg-music');
+    const iconOn = new Image(); iconOn.src = 'elec-on.svg'; // Use electric snake head asset
+    let cells = [];
+    const cellSize = 30;
+    const SVG_SIZE = Math.floor(cellSize * 0.65);
+    const iconOffset = (cellSize - SVG_SIZE) / 2;
+    let bSnake = [{x: 7, y: 5},{x: 6, y: 5},{x: 5, y: 5}, {x: 4, y: 5}, {x: 3, y: 5}, {x: 2, y: 5}, {x: 1, y: 5}];
+    let bDir = {x: 1, y: 0};
+    
+    function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    window.onresize = resize;
+    resize();
+    
+
+    function drawBackground() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the previous frame to avoid ghosting over background image
+
+        // Draw the background color layer on the canvas, using clearRect to see bg image.
+        ctx.fillStyle = "#d3d4d5";
+        ctx.fillStyle = "rgba(211, 212, 213, 0.45)"; // Set a semi-transparent background color to layer over the image
+        //ctx.fillRect(0, 0, canvas.width, canvas.height); // (Optionally enable this if you want an overall color filter over the image)
+        
+        // Grid (make more subtle over the picture)
+        ctx.strokeStyle = "rgba(0,0,0,0.05)"; // Very, very subtle grid lines
+        for(let x=0; x<canvas.width; x+=cellSize) {
+            for(let y=0; y<canvas.height; y+=cellSize) {
+                ctx.strokeRect(x, y, cellSize, cellSize);
+            }
+        }
+
+        // Move Background Snake
+        if (Math.random() < 0.05) {
+            const dirs = [{x:1,y:0}, {x:-1,y:0}, {x:0,y:1}, {x:0,y:-1}];
+            const newDir = dirs[Math.floor(Math.random()*dirs.length)];
+            if (!(newDir.x === -bDir.x && newDir.y === -bDir.y)) bDir = newDir;
+        }
+
+        let head = {
+            x: (bSnake[0].x + bDir.x + Math.ceil(canvas.width/cellSize)) % Math.ceil(canvas.width/cellSize),
+            y: (bSnake[0].y + bDir.y + Math.ceil(canvas.height/cellSize)) % Math.ceil(canvas.height/cellSize)
+        };
+        bSnake.unshift(head);
+        bSnake.pop();
+
+        // Draw Background Snake
+        ctx.fillStyle = "rgba(255, 255, 255, 0.35)"; // Keep it white and very subtle (as requested, 'snake-white')
+        bSnake.forEach((p, i) => {
+            // Adjust opacity along the snake's body to create a trail effect
+            const alpha = 0.35 * (1 - (i / (bSnake.length - 1)) * 0.4);
+            ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+            
+            ctx.fillRect(p.x * cellSize, p.y * cellSize, cellSize, cellSize);
+            if (iconOn.complete) {
+                // Draw the head asset for the foreground snake to make it recognizable as "electric snake" theme
+                ctx.drawImage(iconOn, p.x * cellSize + iconOffset, p.y * cellSize + iconOffset, SVG_SIZE, SVG_SIZE);
+            }
+        });
+    }
+
+    setInterval(drawBackground, 150);
+
+    // --- Leaderboard Logic (Update visual representation of scrolling list) ---
+    async function loadHallOfFame() {
+        const container = document.getElementById('scroll-content');
+        const FINAL_URL = part1 + part2 + part3;
+        try {
+            const res = await fetch(FINAL_URL, {
+                method: 'GET',
+                mode: 'cors',
+                cache: 'no-cache'
+            });
+
+            if (!res.ok) throw new Error('Network response was not ok');
+            
+            const data = await res.json();
+                
+            if(!data || data.length === 0) throw new Error("No data");
+                
+            container.innerHTML = data.map((row, i) => {
+                const name = row[0];
+                const score = row[1];
+                const isMobile = row[2]; // Data includes mobile flag, but we'll stick to a clean textual look.
+                let platformIcon = "";
+
+                // Use simple text string for visual enhancement, combining symbols and text.
+                return `
+                <div class="lb-row">
+                    <div class="left-group">
+                        <div class="rank">
+                            <span class="rank-number">${i + 1}</span>
+                        </div>
+                        <div class="player-name">${name}</div>
+                    </div>
+                    <div class="right-group">
+                        <div class="score-container">
+                            <div class="score-val">${score}</div>
+                            <div class="score-unit">💡</div>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('') + `<div class="thank-you-note">ДЯКУЄМО ЗА УЧАСТЬ!</div>`;
+
+            startScrolling();
+        } catch (e) {
+            container.innerHTML = "<div class='row' style='color: white; padding: 20px;'>Помилка завантаження даних</div>";
+        }
+    }
+    
+    // --- Music Logic (Keep) ---
+    let isPlaying = false;
+    
+    function toggleMusic() {
+        if (isPlaying) {
+            music.pause();
+            document.getElementById('music-toggle').innerText = "🔇";
+        } else {
+            music.play().catch(e => console.log("User interaction needed"));
+            document.getElementById('music-toggle').innerText = "🎵";
+        }
+        isPlaying = !isPlaying;
+    }
+
+    // --- Scrolling Logic (Keep) ---
+    function startScrolling() {
+    
+        const content = document.getElementById('scroll-content');
+        let pos = window.innerHeight;
+        
+        function step() {
+            pos -= 0.85; // Speed of scroll (slightly faster)
+            content.style.top = pos + "px";
+            
+            // Reset scroll when finished
+            if (pos < -content.offsetHeight) {
+                pos = window.innerHeight;
+            }
+            requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+    }
+
+    loadHallOfFame();
+</script>
+
+</body>
+</html>
             --label-bg: #ffbb42;
             --text-main: #000000;
             --bg-color: #f0f2f5;
