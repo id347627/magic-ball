@@ -190,6 +190,23 @@
             letter-spacing: 2px;
             text-shadow: 0 0 10px rgba(237, 185, 46, 0.5);
         }
+
+        /* LOADING ANIMATION */
+        .loading-text {
+            text-align: center;
+            width: 100%;
+            margin-top: 100px;
+            font-family: 'Oswald', sans-serif;
+            color: var(--label-bg);
+            letter-spacing: 3px;
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.4; transform: scale(0.98); }
+            50% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0.4; transform: scale(0.98); }
+        }
     </style>
 </head>
 <body>
@@ -203,7 +220,8 @@
 
 <div id="credits-wrap">
     <div id="scroll-content">
-        </div>
+        <div class="loading-text">ЗАВАНТАЖЕННЯ...</div>
+    </div>
 </div>
 
 <div id="audio-controls">
@@ -215,7 +233,6 @@
 </audio>
 
 <script>
-    // Logic remains exactly as provided in your snippet, keeping positions and geometry
     const part1 = "https://script.google.com/macros/s/";
     const part2 = "AKfycbxr9OemBs-vGeQPGzK1VkPinTDKqCyn_iSRM0Yy5ISYxx3BsJUSdaPelikII6l-lKYeUQ";
     const part3 = "/exec?all=true";
@@ -241,8 +258,8 @@
 
     function drawBackground() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-		
-        ctx.strokeStyle = "rgba(0,0,0,0.05)"; // Very, very subtle grid lines
+        
+        ctx.strokeStyle = "rgba(0,0,0,0.05)"; 
         for(let x=0; x<canvas.width; x+=cellSize) {
             for(let y=0; y<canvas.height; y+=cellSize) {
                 ctx.strokeRect(x, y, cellSize, cellSize);
@@ -280,6 +297,7 @@
             const res = await fetch(FINAL_URL);
             const data = await res.json();
             
+            // This replaces the "Loading" text with the actual list
             container.innerHTML = data.map((row, i) => {
                 return `
                 <div class="lb-row">
@@ -298,7 +316,7 @@
 
             startScrolling();
         } catch (e) {
-            container.innerHTML = "<div style='color: white; text-align:center;'>Помилка завантаження</div>";
+            container.innerHTML = "<div style='color: white; text-align:center; margin-top:50px;'>Помилка завантаження</div>";
         }
     }
 
