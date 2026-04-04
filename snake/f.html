@@ -87,11 +87,13 @@
         #scroll-content {
             position: absolute;
             width: 100%;
-            top: 100%;
+            top: 100%; 
             display: flex;
             flex-direction: column;
             gap: 12px;
             padding-bottom: 200px;
+            opacity: 0; /* Hidden until loaded */
+            transition: opacity 0.5s ease;
         }
 
         .lb-row {
@@ -185,10 +187,13 @@
             text-shadow: 0 0 10px rgba(237, 185, 46, 0.5);
         }
 
-        /* LOADING STYLE */
-        .loading-container {
+        #loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             text-align: center;
-            padding: 40px;
+            z-index: 20;
             font-family: 'Oswald', sans-serif;
             color: var(--label-bg);
             letter-spacing: 3px;
@@ -196,8 +201,8 @@
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(0.95); }
+            0%, 100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 0.5; transform: translate(-50%, -50%) scale(0.95); }
         }
     </style>
 </head>
@@ -205,18 +210,18 @@
 
 <canvas id="bg-canvas"></canvas>
 
+<div id="loader">
+    <h2 style="margin:0;">ЗАВАНТАЖЕННЯ...</h2>
+    <div style="font-size: 2.5rem;">⚡</div>
+</div>
+
 <div id="header">
     <div class="title">🏆 ЗАЛ СЛАВИ 🏆<br>ЕЛЕКТРИК-ЗМІЙКИ</div>
     <div class="subtitle">ФІНАЛЬНИЙ РЕЙТИНГ</div>
 </div>
 
 <div id="credits-wrap">
-    <div id="scroll-content">
-        <div class="loading-container">
-            <h2>ЗАВАНТАЖЕННЯ...</h2>
-            <div style="font-size: 2rem;">⚡</div>
-        </div>
-    </div>
+    <div id="scroll-content"></div>
 </div>
 
 <div id="audio-controls">
@@ -237,6 +242,7 @@
     const canvas = document.getElementById('bg-canvas');
     const ctx = canvas.getContext('2d');
     const music = document.getElementById('bg-music');
+    const loader = document.getElementById('loader');
     const iconOn = new Image(); iconOn.src = 'elec-on.svg'; 
     let bSnake = [{x: 7, y: 5},{x: 6, y: 5},{x: 5, y: 5}, {x: 4, y: 5}, {x: 3, y: 5}, {x: 2, y: 5}, {x: 1, y: 5}];
     let bDir = {x: 1, y: 0};
@@ -284,9 +290,6 @@
     }
     setInterval(drawBackground, 150);
 
-    // Initial positioning for the loader to be visible immediately
-    document.getElementById('scroll-content').style.top = "20px";
-
     async function loadHallOfFame() {
         const container = document.getElementById('scroll-content');
         const FINAL_URL = part1 + part2 + part3;
@@ -310,19 +313,32 @@
                 </div>`;
             }).join('') + `<div class="thank-you-note">ДЯКУЄМО ЗА УЧАСТЬ!</div>`;
 
-            startScrolling();
+            // REMOVE LOADER
+            loader.style.display = 'none';
+            // SHOW CONTENT IMMEDIATELY AT TOP BEFORE SCROLLING
+            container.style.opacity = "1";
+            container.style.top = "20px"; 
+            
+            // Wait 2 seconds so people can see the top winners, then start moving
+            setTimeout(startScrolling, 2000);
+
         } catch (e) {
-            container.innerHTML = "<div style='color: white; text-align:center;'>Помилка завантаження</div>";
+            loader.style.display = 'none';
+            container.style.opacity = "1";
+            container.innerHTML = "<div style='color: white; text-align:center; padding-top:100px;'>Помилка завантаження</div>";
         }
     }
 
     function startScrolling() {
         const content = document.getElementById('scroll-content');
-        let pos = window.innerHeight;
+        let pos = 20; // Start from current visual position
         function step() {
             pos -= 0.85;
             content.style.top = pos + "px";
-            if (pos < -content.offsetHeight) pos = window.innerHeight;
+            // If it fully disappears off the top, restart from bottom
+            if (pos < -content.offsetHeight) {
+                pos = window.innerHeight;
+            }
             requestAnimationFrame(step);
         }
         requestAnimationFrame(step);
